@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Controle Financeiro</title>
+    <title>SCF - Sistema de Controle</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <h1>SCF - Sistema de Controle Financeiro</h1>
+    <h1>Sistema de Controle Financeiro</h1>
 
     <main>
         <section id="nova-transacao">
@@ -63,6 +63,27 @@
 
                 <button type="submit">Cadastrar transação</button>
             </form>
+        </section>
+
+        <section id="historico-transacoes">
+            <h2>Histórico de transações</h2>
+
+            <div id="tabela-transacoes-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th scope="col">Descrição</th>
+                            <th scope="col">Categoria</th>
+                            <th scope="col">Data</th>
+                            <th scope="col">Tipo</th>
+                            <th scope="col">Valor</th>
+                            <th scope="col">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="corpo-tabela-transacoes">
+                    </tbody>
+                </table>
+            </div>
         </section>
     </main>
 
