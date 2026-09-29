@@ -9,6 +9,63 @@
 <body>
     <h1>SCF - Sistema de Controle Financeiro</h1>
 
+    <main>
+        <section id="nova-transacao">
+            <h2>Nova transação</h2>
+
+            <form id="form-nova-transacao">
+                <label for="tipo">Tipo</label>
+                <select id="tipo" name="tipo" required>
+                    <option value="" selected disabled>Selecione</option>
+                    <option value="receita">Receita</option>
+                    <option value="despesa">Despesa</option>
+                </select>
+
+                <label for="recorrencia">Recorrência</label>
+                <select id="recorrencia" name="recorrencia" required>
+                    <option value="" selected disabled>Selecionea</option>
+                    <option value="fixa">Fixa</option>
+                    <option value="variavel">Variável</option>
+                </select>
+
+                <label for="essencialidade">Essencialidade</label>
+                <select id="essencialidade" name="essencialidade" required>
+                    <option value="" selected disabled>Selecione</option>
+                    <option value="essencial">Essencial</option>
+                    <option value="nao-essencial">Não essencial</option>
+                </select>
+
+                <label for="descricao">Descrição</label>
+                <input type="text" id="descricao" name="descricao" required>
+
+                <label for="valor">Valor</label>
+                <input type="number" id="valor" name="valor" min="0.01" step="0.01" required>
+
+                <label for="categoria">Categoria</label>
+                <select id="categoria" name="categoria" required>
+                    <option value="" selected disabled>Selecione</option>
+                    <option value="alimentacao">Alimentação</option>
+                    <option value="educacao">Educação</option>
+                    <option value="lazer">Lazer</option>
+                    <option value="moradia">Moradia</option>
+                    <option value="saude">Saúde</option>
+                    <option value="transporte">Transporte</option>
+                    <option value="salario">Salário</option>
+                    <option value="investimentos">Investimentos</option>
+                    <option value="outros">Outros</option>
+                </select>
+
+                <label for="data">Data</label>
+                <input type="date" id="data" name="data" required>
+
+                <label for="observacao">Observação (opcional)</label>
+                <textarea id="observacao" name="observacao" rows="4"></textarea>
+
+                <button type="submit">Cadastrar transação</button>
+            </form>
+        </section>
+    </main>
+
     <script type="module" src="js/main.js"></script>
 </body>
 </html>
