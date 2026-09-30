@@ -16,52 +16,68 @@
             <h2>Nova transação</h2>
 
             <form id="form-nova-transacao">
-                <label for="tipo">Tipo</label>
-                <select id="tipo" name="tipo" required>
-                    <option value="" selected disabled>Selecione</option>
-                    <option value="receita">Receita</option>
-                    <option value="despesa">Despesa</option>
-                </select>
+                <div class="form-group">
+                    <label for="tipo">Tipo</label>
+                    <select id="tipo" name="tipo" required>
+                        <option value="" selected disabled>Selecione</option>
+                        <option value="receita">Receita</option>
+                        <option value="despesa">Despesa</option>
+                    </select>
+                </div>
 
-                <label for="recorrencia">Recorrência</label>
-                <select id="recorrencia" name="recorrencia" required>
-                    <option value="" selected disabled>Selecione</option>
-                    <option value="fixa">Fixa</option>
-                    <option value="variavel">Variável</option>
-                </select>
+                <div class="form-group">
+                    <label for="recorrencia">Recorrência</label>
+                    <select id="recorrencia" name="recorrencia" required>
+                        <option value="" selected disabled>Selecione</option>
+                        <option value="fixa">Fixa</option>
+                        <option value="variavel">Variável</option>
+                    </select>
+                </div>
 
-                <label for="essencialidade">Essencialidade</label>
-                <select id="essencialidade" name="essencialidade" required>
-                    <option value="" selected disabled>Selecione</option>
-                    <option value="essencial">Essencial</option>
-                    <option value="nao-essencial">Não essencial</option>
-                </select>
+                <div class="form-group">
+                    <label for="essencialidade">Essencialidade</label>
+                    <select id="essencialidade" name="essencialidade" required>
+                        <option value="" selected disabled>Selecione</option>
+                        <option value="essencial">Essencial</option>
+                        <option value="nao-essencial">Não essencial</option>
+                    </select>
+                </div>
 
-                <label for="descricao">Descrição</label>
-                <input type="text" id="descricao" name="descricao" required>
+                <div class="form-group">
+                    <label for="descricao">Descrição</label>
+                    <input type="text" id="descricao" name="descricao" required>
+                </div>
 
-                <label for="valor">Valor</label>
-                <input type="number" id="valor" name="valor" min="0.01" step="0.01" required>
+                <div class="form-group">
+                    <label for="valor">Valor</label>
+                    <input type="number" id="valor" name="valor" min="0.01" step="0.01" required>
+                </div>
 
-                <label for="categoria">Categoria</label>
-                <select id="categoria" name="categoria" required>
-                    <option value="" selected disabled>Selecione</option>
-                    <option value="alimentacao">Alimentação</option>
-                    <option value="educacao">Educação</option>
-                    <option value="lazer">Lazer</option>
-                    <option value="moradia">Moradia</option>
-                    <option value="saude">Saúde</option>
-                    <option value="transporte">Transporte</option>
-                    <option value="salario">Salário</option>
-                    <option value="investimentos">Investimentos</option>
-                    <option value="outros">Outros</option>
-                </select>
+                <div class="form-group">
+                    <label for="categoria">Categoria</label>
+                    <select id="categoria" name="categoria" required>
+                        <option value="" selected disabled>Selecione</option>
+                        <option value="alimentacao">Alimentação</option>
+                        <option value="educacao">Educação</option>
+                        <option value="lazer">Lazer</option>
+                        <option value="moradia">Moradia</option>
+                        <option value="saude">Saúde</option>
+                        <option value="transporte">Transporte</option>
+                        <option value="salario">Salário</option>
+                        <option value="investimentos">Investimentos</option>
+                        <option value="outros">Outros</option>
+                    </select>
+                </div>
 
-                <label for="data">Data</label>
-                <input type="date" id="data" name="data" required>
+                <div class="form-group">
+                    <label for="data">Data</label>
+                    <input type="date" id="data" name="data" required>
+                </div>
 
-                <label for="observacao">Observação (opcional)</label>
-                <textarea id="observacao" name="observacao" rows="4"></textarea>
+                <div class="form-group">
+                    <label for="observacao">Observação (opcional)</label>
+                    <textarea id="observacao" name="observacao" rows="4"></textarea>
+                </div>
 
                 <button type="submit">Cadastrar transação</button>
             </form>
