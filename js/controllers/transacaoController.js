@@ -1,3 +1,5 @@
+import {validarTransacao} from '../utils/validarTransacao.js';
+
 export function inicializarTransacaoController() {
     const formulario = document.querySelector('#form-nova-transacao');
     const inputTipo = document.querySelector('#tipo');
@@ -35,5 +37,15 @@ export function inicializarTransacaoController() {
             data: data,
             observacao: observacaoLimpa
         };
+
+        const listaDeErros = validarTransacao(transacao);
+
+        if (listaDeErros.length > 0) {
+            return console.error(listaDeErros);
+        }
+
+        console.log('transação válida');
+        console.log(transacao);
     });
+    
 }
