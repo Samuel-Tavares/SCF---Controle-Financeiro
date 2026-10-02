@@ -8,6 +8,7 @@
     --color-surface: #ffffff;
     --color-text: #1f2937;
     --color-border: #d1d5db;
+    --color-danger-hover: #b91c1c;
     --border-radius: 8px;
     --spacing-sm: 8px;
     --spacing-md: 16px;
@@ -150,4 +151,24 @@ section h2 {
     section {
         padding: var(--spacing-md);
     }
+}
+
+.botao-excluir {
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: 0;
+    border-radius: var(--border-radius);
+    background-color: var(--color-danger);
+    color: var(--color-surface);
+    cursor: pointer;
+    font: inherit;
+    font-weight: 600;
+}
+
+.botao-excluir:hover {
+    background-color: var(--color-danger-hover);
+}
+
+.botao-excluir:focus-visible {
+    outline: 3px solid var(--color-focus);
+    outline-offset: 2px;
 }

@@ -61,7 +61,7 @@ export function renderizarTransacoes(transacoes, aoExcluir) {
             criarCelula(formatarData(transacao.data)),
             criarCelula(transacao.tipo),
             criarCelula(formatarMoeda(transacao.valor)),
-            criarCelula("")
+            celulaAcoes
         );
 
         corpoTabela.append(linha);
