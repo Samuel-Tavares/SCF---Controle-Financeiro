@@ -7,7 +7,27 @@ function criarCelula(conteudo) {
     return celula;
 }
 
-export function renderizarTransacoes(transacoes) {
+function criarBotaoExcluir(id, aoExcluir) {
+    const botao = document.createElement("button");
+
+    botao.type = "button";
+    botao.textContent = "Excluir";
+    botao.classList.add("botao-excluir");
+
+    botao.addEventListener("click", () => {
+        aoExcluir(id);
+    });
+
+    return botao;
+}
+
+export function confirmarExclusao() {
+    return window.confirm(
+        "Deseja realmente excluir esta transação?"
+    );
+}
+
+export function renderizarTransacoes(transacoes, aoExcluir) {
     const corpoTabela = document.querySelector("#corpo-tabela-transacoes");
 
     if (!corpoTabela) {
@@ -29,8 +49,11 @@ export function renderizarTransacoes(transacoes) {
 
     transacoes.forEach((transacao) => {
         const linha = document.createElement("tr");
+        const celulaAcoes = criarCelula("");
 
         linha.dataset.id = transacao.id;
+
+        celulaAcoes.append(criarBotaoExcluir(transacao.id, aoExcluir));
 
         linha.append(
             criarCelula(transacao.descricao),

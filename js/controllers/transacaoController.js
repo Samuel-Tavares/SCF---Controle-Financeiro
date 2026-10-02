@@ -1,16 +1,37 @@
-import { cadastrarTransacao, listarTransacoes } from "../services/financeiroService.js";
-import { renderizarTransacoes } from "../views/transacaoView.js";
+import { 
+    cadastrarTransacao, 
+    listarTransacoes, 
+    excluirTransacao } from "../services/financeiroService.js";
+
+import { renderizarTransacoes, confirmarExclusao } from "../views/transacaoView.js";
 
 function atualizarListaTransacoes() {
     const resultado = listarTransacoes();
 
     if (!resultado.sucesso) {
         console.error(resultado.erros);
-        renderizarTransacoes([]);
+        renderizarTransacoes([], tratarExclusaoTransacao);
         return;
     }
 
-    renderizarTransacoes(resultado.transacoes);
+    renderizarTransacoes(resultado.transacoes, tratarExclusaoTransacao);
+}
+
+function tratarExclusaoTransacao(id) {
+    const confirmou = confirmarExclusao();
+
+    if(!confirmou) {
+        return;
+    }
+
+    const resultado = excluirTransacao(id);
+
+    if (!resultado.sucesso) {
+        console.error(resultado.erros);
+        return;
+    }
+
+    atualizarListaTransacoes();
 }
 
 export function inicializarTransacaoController() {
@@ -46,8 +67,7 @@ export function inicializarTransacaoController() {
             console.error(resultado.erros);
             return;
         }
-
-        console.log(resultado.transacao);
+        
         formulario.reset();
         atualizarListaTransacoes();
     });
