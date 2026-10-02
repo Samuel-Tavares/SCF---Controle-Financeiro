@@ -1,4 +1,4 @@
-import {validarTransacao} from '../utils/validarTransacao.js';
+import { cadastrarTransacao } from "../services/financeiroService.js";
 
 export function inicializarTransacaoController() {
     const formulario = document.querySelector('#form-nova-transacao');
@@ -38,14 +38,15 @@ export function inicializarTransacaoController() {
             observacao: observacaoLimpa
         };
 
-        const listaDeErros = validarTransacao(transacao);
+        const resultado = cadastrarTransacao(transacao);
 
-        if (listaDeErros.length > 0) {
-            return console.error(listaDeErros);
+        if (!resultado.sucesso) {
+            console.error(resultado.erros);
+            return;
         }
 
-        console.log('transação válida');
-        console.log(transacao);
+        console.log(resultado.transacao);
+        formulario.reset();
     });
     
 }
