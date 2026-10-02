@@ -1,6 +1,10 @@
 import { validarTransacao } from "../utils/validarTransacao.js";
 import Transacao from "../models/Transacao.js";
-import { salvarTransacao, carregarTransacoes } from "../repositories/transacaoRepository.js";
+import { 
+    salvarTransacao, 
+    carregarTransacoes, 
+    removerTransacao as removerTransacaoRepository 
+} from "../repositories/transacaoRepository.js";
 
 export function cadastrarTransacao(dados) {
     const erros = validarTransacao(dados);
@@ -51,5 +55,23 @@ export function listarTransacoes() {
             transacoes: [],
             erros: [error.message]
         }
+    }
+}
+
+export function excluirTransacao(id) {
+    try {
+        const transacaoRemovida = removerTransacaoRepository(id);
+
+        return {
+            sucesso: true,
+            transacao: transacaoRemovida,
+            erros: []
+        };
+    } catch (error) {
+        return {
+            sucesso: false,
+            transacao: null,
+            erros: [error.message]
+        };
     }
 }
