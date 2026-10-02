@@ -1,4 +1,17 @@
-import { cadastrarTransacao } from "../services/financeiroService.js";
+import { cadastrarTransacao, listarTransacoes } from "../services/financeiroService.js";
+import { renderizarTransacoes } from "../views/transacaoView.js";
+
+function atualizarListaTransacoes() {
+    const resultado = listarTransacoes();
+
+    if (!resultado.sucesso) {
+        console.error(resultado.erros);
+        renderizarTransacoes([]);
+        return;
+    }
+
+    renderizarTransacoes(resultado.transacoes);
+}
 
 export function inicializarTransacaoController() {
     const formulario = document.querySelector('#form-nova-transacao');
@@ -10,6 +23,8 @@ export function inicializarTransacaoController() {
     const inputCategoria = document.querySelector('#categoria');
     const inputData = document.querySelector('#data');
     const inputObservacao = document.querySelector('#observacao');
+
+    atualizarListaTransacoes();
 
     formulario.addEventListener('submit', function(evento) {
         evento.preventDefault();
@@ -47,6 +62,7 @@ export function inicializarTransacaoController() {
 
         console.log(resultado.transacao);
         formulario.reset();
+        atualizarListaTransacoes();
     });
     
 }
