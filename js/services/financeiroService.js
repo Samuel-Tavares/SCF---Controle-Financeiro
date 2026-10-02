@@ -1,7 +1,6 @@
 import { validarTransacao } from "../utils/validarTransacao.js";
 import Transacao from "../models/Transacao.js";
-import { salvarTransacao } from "../repositories/transacaoRepository.js"
-
+import { salvarTransacao, carregarTransacoes } from "../repositories/transacaoRepository.js";
 
 export function cadastrarTransacao(dados) {
     const erros = validarTransacao(dados);
@@ -34,5 +33,23 @@ export function cadastrarTransacao(dados) {
             transacao: null,
             erros: [error.message]
         };
+    }
+}
+
+export function listarTransacoes() {
+    try {
+        const transacoes = carregarTransacoes();
+
+        return {
+            sucesso: true,
+            transacoes,
+            erros: []
+        }
+    } catch (error) {
+        return {
+            sucesso: false,
+            transacoes: [],
+            erros: [error.message]
+        }
     }
 }
