@@ -28,29 +28,16 @@ export function inicializarTransacaoController() {
 
     formulario.addEventListener('submit', function(evento) {
         evento.preventDefault();
-
-        const tipo = inputTipo.value;
-        const recorrencia = inputRecorrencia.value;
-        const essencialidade = inputEssencialidade.value;
-        const descricao = inputDescricao.value;
-        const valor = inputValor.value;
-        const categoria = inputCategoria.value;
-        const data = inputData.value;
-        const observacao = inputObservacao.value;
-
-        const valorConvertido = Number(valor);
-        const descricaoLimpa = descricao.trim();
-        const observacaoLimpa = observacao.trim();
         
         const transacao = {
-            tipo: tipo,
-            recorrencia: recorrencia,
-            essencialidade: essencialidade,
-            descricao: descricaoLimpa,
-            valor: valorConvertido,
-            categoria: categoria,
-            data: data,
-            observacao: observacaoLimpa
+            tipo: inputTipo.value,
+            recorrencia: inputRecorrencia.value,
+            essencialidade: inputEssencialidade.value,
+            descricao: inputDescricao.value.trim(),
+            valor: Number(inputValor.value),
+            categoria: inputCategoria.value,
+            data: inputData.value,
+            observacao: inputObservacao.value.trim()
         };
 
         const resultado = cadastrarTransacao(transacao);
