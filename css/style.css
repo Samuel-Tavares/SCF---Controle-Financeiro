@@ -197,3 +197,52 @@ section h2 {
     outline: 3px solid var(--color-focus);
     outline-offset: 2px;
 }
+
+.resumo-cards {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--spacing-md);
+}
+
+.resumo-card {
+    padding: var(--spacing-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
+    background-color: var(--color-background);
+}
+
+.resumo-card h3 {
+    margin-top: 0;
+    margin-bottom: var(--spacing-sm);
+    font-size: 1rem;
+}
+
+.resumo-card p {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+#total-receitas {
+    color: var(--color-success);
+}
+
+#total-despesas {
+    color: var(--color-danger);
+}
+
+#saldo {
+    color: var(--color-primary);
+}
+
+@media (max-width: 800px) {
+    .resumo-cards {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 480px) {
+    .resumo-cards {
+        grid-template-columns: 1fr;
+    }
+}
