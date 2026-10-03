@@ -2,10 +2,12 @@ import {
     cadastrarTransacao, 
     listarTransacoes,
     editarTransacao,
-    excluirTransacao
+    excluirTransacao,
+    calcularResumo
 } from "../services/financeiroService.js";
 
 import { renderizarTransacoes, confirmarExclusao } from "../views/transacaoView.js";
+import { renderizarResumo } from "../views/resumoView.js";
 
 let idTransacaoEmEdicao = null;
 
@@ -82,6 +84,7 @@ function tratarExclusaoTransacao(id) {
     }
 
     atualizarListaTransacoes();
+    atualizarResumoFinanceiro();
 }
 
 export function inicializarTransacaoController() {
@@ -97,6 +100,7 @@ export function inicializarTransacaoController() {
     const inputObservacao = document.querySelector('#observacao');
 
     atualizarListaTransacoes();
+    atualizarResumoFinanceiro();
 
     formulario.addEventListener('submit', function(evento) {
         evento.preventDefault();
@@ -123,6 +127,17 @@ export function inicializarTransacaoController() {
         
         restaurarModoCadastro();
         atualizarListaTransacoes();
+        atualizarResumoFinanceiro();
     });
-    
+}
+
+function atualizarResumoFinanceiro() {
+    const resultado = calcularResumo();
+
+    if (!resultado.sucesso) {
+        console.error(resultado.erros);
+        return;
+    }
+
+    renderizarResumo(resultado.resumo);
 }

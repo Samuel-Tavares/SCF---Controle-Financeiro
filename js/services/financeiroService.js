@@ -144,7 +144,6 @@ export function calcularResumo() {
             (receitasEmCentavos - despesasEmCentavos) / receitasEmCentavos) * 100
             : 0;
         
-
         const resumo = new ResumoFinanceiro({
             totalReceitas,
             totalDespesas,
