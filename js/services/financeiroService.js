@@ -216,3 +216,62 @@ export function cadastrarOrcamentoCategoria(dados) {
         };
     }
 }
+
+export function listarOrcamentosCategoria() {
+    try {
+        const orcamentos = carregarOrcamentos();
+        const transacoes = carregarTransacoes();
+
+        const orcamentosCalculados = orcamentos.map(
+            (orcamento) => {
+                const limiteEmCentavos = Math.round(
+                    orcamento.valorLimite * 100
+                );
+
+                const gastoEmCentavos = transacoes.reduce(
+                    (total, transacao) => {
+                        const pertenceAoOrcamento = 
+                        transacao.tipo === "despesa"
+                        && transacao.categoria
+                            === orcamento.categoria
+                        && transacao.data.startsWith(orcamento.mesReferencia);
+
+                    if (!pertenceAoOrcamento) {
+                        return total;
+                    }
+
+                    return total+Math.round(transacao.valor * 100);
+                    },
+                    0
+                );
+
+                const valorGasto = gastoEmCentavos / 100;
+
+                const valorRestante = (limiteEmCentavos - gastoEmCentavos) / 100;
+
+                const percentualUtilizado = limiteEmCentavos > 0 ? (
+                    gastoEmCentavos / limiteEmCentavos
+                ) * 100 : 0;
+
+                return {
+                    ...orcamento,
+                    valorGasto,
+                    valorRestante,
+                    percentualUtilizado
+                };
+            }
+        );
+
+        return {
+            sucesso: true,
+            orcamentos: orcamentosCalculados,
+            erros: []
+        };
+    } catch (error) {
+        return {
+            sucesso: false,
+            orcamentos: [],
+            erros: [error.message]
+        };
+    }
+}
