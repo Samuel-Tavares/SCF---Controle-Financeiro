@@ -8,6 +8,9 @@ import {
 } from "../repositories/transacaoRepository.js";
 
 import ResumoFinanceiro from "../models/ResumoFinanceiro.js";
+import OrcamentoCategoria from "../models/OrcamentoCategoria.js"
+import { validarOrcamentoCategoria } from "../utils/validarOrcamentoCategoria.js"
+import { carregarOrcamentos, salvarOrcamento} from "../repositories/orcamentoCategoriaRepository.js"
 
 export function cadastrarTransacao(dados) {
     const erros = validarTransacao(dados);
@@ -160,6 +163,55 @@ export function calcularResumo() {
         return {
             sucesso: false,
             resumo: null,
+            erros: [error.message]
+        };
+    }
+}
+
+export function cadastrarOrcamentoCategoria(dados) {
+    const erros = validarOrcamentoCategoria(dados);
+
+    if (erros.length > 0) {
+        return {
+            sucesso: false,
+            orcamento: null,
+            erros
+        };
+    }
+
+    try {
+        const orcamentos = carregarOrcamentos();
+
+        const orcamentoExistente = orcamentos.some(
+            (orcamento) => 
+                orcamento.categoria === dados.categoria
+                && orcamento.mesReferencia === dados.mesReferencia
+        );
+
+        if (orcamentoExistente) {
+            return {
+                sucesso: false,
+                orcamento: null,
+                erros: ["Já existe um orçamento para esta categoria e mês"]
+            };
+        }
+
+        const orcamento = new OrcamentoCategoria({
+            ...dados,
+            id: crypto.randomUUID()
+        });
+
+        const orcamentoSalvo = salvarOrcamento(orcamento);
+
+        return {
+            sucesso: true,
+            orcamento: orcamentoSalvo,
+            erros: []
+        };
+    } catch (error) {
+        return {
+            sucesso: false,
+            orcamento: null,
             erros: [error.message]
         };
     }
