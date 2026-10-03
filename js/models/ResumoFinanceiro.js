@@ -3,11 +3,11 @@ export default class ResumoFinanceiro{
         totalReceitas,
         totalDespesas,
         saldo,
-        taxaDeEconomia
+        taxaEconomia
     }) {
         this.totalReceitas = totalReceitas;
         this.totalDespesas = totalDespesas;
         this.saldo = saldo;
-        this.taxaDeEconomia = taxaDeEconomia;
+        this.taxaEconomia = taxaEconomia;
     }
 }

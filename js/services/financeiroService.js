@@ -7,6 +7,8 @@ import {
     atualizarTransacao as atualizarTransacaoRepository
 } from "../repositories/transacaoRepository.js";
 
+import ResumoFinanceiro from "../models/ResumoFinanceiro.js";
+
 export function cadastrarTransacao(dados) {
     const erros = validarTransacao(dados);
 
@@ -107,6 +109,58 @@ export function editarTransacao(id, dados) {
         return {
             sucesso: false,
             transacao: null,
+            erros: [error.message]
+        };
+    }
+}
+
+export function calcularResumo() {
+    try {
+        const transacoes = carregarTransacoes();
+
+        let receitasEmCentavos = 0;
+        let despesasEmCentavos = 0;
+
+        transacoes.forEach((transacao) => {
+            const valorEmCentavos = Math.round(
+                transacao.valor * 100
+            );
+
+            if (transacao.tipo === "receita") {
+                receitasEmCentavos += valorEmCentavos;
+            }
+
+            if (transacao.tipo === "despesa") {
+                despesasEmCentavos += valorEmCentavos;
+            }
+        });
+
+        const totalReceitas = receitasEmCentavos / 100;
+        const totalDespesas = despesasEmCentavos / 100;
+
+        const saldo = (receitasEmCentavos - despesasEmCentavos) / 100;
+
+        const taxaEconomia = receitasEmCentavos > 0 ? (
+            (receitasEmCentavos - despesasEmCentavos) / receitasEmCentavos) * 100
+            : 0;
+        
+
+        const resumo = new ResumoFinanceiro({
+            totalReceitas,
+            totalDespesas,
+            saldo,
+            taxaEconomia
+        });
+
+        return {
+            sucesso: true,
+            resumo,
+            erros: []
+        };
+    } catch (error) {
+        return {
+            sucesso: false,
+            resumo: null,
             erros: [error.message]
         };
     }
