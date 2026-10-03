@@ -11,3 +11,11 @@ export function formatarData(data) {
 
     return new Intl.DateTimeFormat("pt-BR").format(dataLocal);
 }
+
+export function formatarPorcentagem(valor) {
+    return new Intl.NumberFormat("pt-BR", {
+        style: "percent",
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    }).format(valor / 100);
+}
