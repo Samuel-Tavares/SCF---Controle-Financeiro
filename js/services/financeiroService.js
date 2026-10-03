@@ -3,7 +3,8 @@ import Transacao from "../models/Transacao.js";
 import { 
     salvarTransacao, 
     carregarTransacoes, 
-    removerTransacao as removerTransacaoRepository 
+    removerTransacao as removerTransacaoRepository,
+    atualizarTransacao as atualizarTransacaoRepository
 } from "../repositories/transacaoRepository.js";
 
 export function cadastrarTransacao(dados) {
@@ -65,6 +66,41 @@ export function excluirTransacao(id) {
         return {
             sucesso: true,
             transacao: transacaoRemovida,
+            erros: []
+        };
+    } catch (error) {
+        return {
+            sucesso: false,
+            transacao: null,
+            erros: [error.message]
+        };
+    }
+}
+
+export function editarTransacao(id, dados) {
+    const erros = validarTransacao(dados);
+
+    if (erros.length > 0) {
+        return {
+            sucesso: false,
+            transacao: null,
+            erros
+        };
+    }
+
+    try {
+        const transacaoAtualizada = new Transacao({
+            ...dados,
+            id
+        });
+
+        const transacaoSalva = atualizarTransacaoRepository(
+            transacaoAtualizada
+        );
+
+        return {
+            sucesso: true,
+            transacao: transacaoSalva,
             erros: []
         };
     } catch (error) {

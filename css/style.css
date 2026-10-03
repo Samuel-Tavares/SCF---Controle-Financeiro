@@ -172,3 +172,28 @@ section h2 {
     outline: 3px solid var(--color-focus);
     outline-offset: 2px;
 }
+
+.acoes-transacao {
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+.botao-editar {
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: 0;
+    border-radius: var(--border-radius);
+    background-color: var(--color-primary);
+    color: var(--color-surface);
+    cursor: pointer;
+    font: inherit;
+    font-weight: 600;
+}
+
+.botao-editar:hover {
+    background-color: var(--color-primary-hover);
+}
+
+.botao-editar:focus-visible {
+    outline: 3px solid var(--color-focus);
+    outline-offset: 2px;
+}

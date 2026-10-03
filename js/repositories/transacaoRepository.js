@@ -61,3 +61,30 @@ export function removerTransacao(id) {
         );
     }
 }
+
+export function atualizarTransacao(transacaoAtualizada) {
+    try {
+        const transacoes = carregarTransacoes();
+
+        const indice = transacoes.findIndex(
+            (transacao) => {
+                return transacao.id === transacaoAtualizada.id;
+            }
+        );
+
+        if (indice === -1) {
+            throw new Error("Transacao não encontrada.");
+        }
+
+        transacoes[indice] = transacaoAtualizada;
+
+        localStorage.setItem(
+            CHAVE,
+            JSON.stringify(transacoes)
+        );
+
+        return transacaoAtualizada;
+    } catch (error) {
+        throw new Error(`Erro ao atualizar transação: ${error.message}`);
+    }
+}

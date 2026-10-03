@@ -7,16 +7,13 @@ function criarCelula(conteudo) {
     return celula;
 }
 
-function criarBotaoExcluir(id, aoExcluir) {
+function criarBotao(texto, classe, aoClicar) {
     const botao = document.createElement("button");
 
     botao.type = "button";
-    botao.textContent = "Excluir";
-    botao.classList.add("botao-excluir");
-
-    botao.addEventListener("click", () => {
-        aoExcluir(id);
-    });
+    botao.textContent = texto;
+    botao.classList.add(classe);
+    botao.addEventListener("click", aoClicar);
 
     return botao;
 }
@@ -27,7 +24,7 @@ export function confirmarExclusao() {
     );
 }
 
-export function renderizarTransacoes(transacoes, aoExcluir) {
+export function renderizarTransacoes(transacoes, aoEditar, aoExcluir) {
     const corpoTabela = document.querySelector("#corpo-tabela-transacoes");
 
     if (!corpoTabela) {
@@ -52,8 +49,21 @@ export function renderizarTransacoes(transacoes, aoExcluir) {
         const celulaAcoes = criarCelula("");
 
         linha.dataset.id = transacao.id;
+        celulaAcoes.classList.add("acoes-transacao");
 
-        celulaAcoes.append(criarBotaoExcluir(transacao.id, aoExcluir));
+        const botaoEditar = criarBotao(
+            "Editar",
+            "botao-editar",
+            () => aoEditar(transacao)
+        );
+
+        const botaoExcluir = criarBotao(
+            "Excluir",
+            "botao-excluir",
+            () => aoExcluir(transacao.id)
+        );
+
+        celulaAcoes.append(botaoEditar, botaoExcluir);
 
         linha.append(
             criarCelula(transacao.descricao),

@@ -1,20 +1,66 @@
 import { 
     cadastrarTransacao, 
-    listarTransacoes, 
-    excluirTransacao } from "../services/financeiroService.js";
+    listarTransacoes,
+    editarTransacao,
+    excluirTransacao
+} from "../services/financeiroService.js";
 
 import { renderizarTransacoes, confirmarExclusao } from "../views/transacaoView.js";
+
+let idTransacaoEmEdicao = null;
 
 function atualizarListaTransacoes() {
     const resultado = listarTransacoes();
 
     if (!resultado.sucesso) {
         console.error(resultado.erros);
-        renderizarTransacoes([], tratarExclusaoTransacao);
+        renderizarTransacoes([], tratarEdicaoTransacao, tratarExclusaoTransacao);
         return;
     }
 
-    renderizarTransacoes(resultado.transacoes, tratarExclusaoTransacao);
+    renderizarTransacoes(
+        resultado.transacoes,
+        tratarEdicaoTransacao,
+        tratarExclusaoTransacao
+    );
+}
+
+function tratarEdicaoTransacao(transacao) {
+    idTransacaoEmEdicao = transacao.id;
+
+    document.querySelector("#tipo").value = transacao.tipo;
+    document.querySelector("#recorrencia").value =
+        transacao.recorrencia;
+    document.querySelector("#essencialidade").value =
+        transacao.essencialidade;
+    document.querySelector("#descricao").value =
+        transacao.descricao;
+    document.querySelector("#valor").value = transacao.valor;
+    document.querySelector("#categoria").value =
+        transacao.categoria;
+    document.querySelector("#data").value = transacao.data;
+    document.querySelector("#observacao").value =
+        transacao.observacao ?? "";
+
+    const botaoEnviar = document.querySelector(
+        '#form-nova-transacao button[type="submit"]'
+    );
+
+    botaoEnviar.textContent = "Salvar alterações";
+
+    document.querySelector("#nova-transacao").scrollIntoView({
+        behavior: "smooth"
+    });
+}
+
+function restaurarModoCadastro() {
+    idTransacaoEmEdicao = null;
+
+    const formulario = document.querySelector("#form-nova-transacao");
+    const botaoEnviar = formulario.querySelector('button[type="submit"]');
+
+    formulario.reset();
+    botaoEnviar.textContent = "Cadastrar transação";
 }
 
 function tratarExclusaoTransacao(id) {
@@ -31,11 +77,16 @@ function tratarExclusaoTransacao(id) {
         return;
     }
 
+    if (idTransacaoEmEdicao === id) {
+        restaurarModoCadastro();
+    }
+
     atualizarListaTransacoes();
 }
 
 export function inicializarTransacaoController() {
     const formulario = document.querySelector('#form-nova-transacao');
+
     const inputTipo = document.querySelector('#tipo');
     const inputRecorrencia = document.querySelector('#recorrencia');
     const inputEssencialidade = document.querySelector('#essencialidade');
@@ -61,14 +112,16 @@ export function inicializarTransacaoController() {
             observacao: inputObservacao.value.trim()
         };
 
-        const resultado = cadastrarTransacao(transacao);
+        const resultado = idTransacaoEmEdicao
+            ? editarTransacao(idTransacaoEmEdicao, transacao)
+            : cadastrarTransacao(transacao);
 
         if (!resultado.sucesso) {
             console.error(resultado.erros);
             return;
         }
         
-        formulario.reset();
+        restaurarModoCadastro();
         atualizarListaTransacoes();
     });
     
