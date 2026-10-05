@@ -308,3 +308,22 @@ section h2 {
         grid-template-columns: 1fr;
     }
 }
+
+#tabela-orcamentos-container .orcamento-alerta {
+    background-color: #fffbeb;
+}
+
+#tabela-orcamentos-container .orcamento-alerta td:last-child {
+    color: #b45309;
+    font-weight: 700;
+}
+
+#tabela-orcamentos-container .orcamento-excedido {
+    background-color: #fef2f2;
+}
+
+#tabela-orcamentos-container .orcamento-excedido td:nth-child(5),
+#tabela-orcamentos-container .orcamento-excedido td:last-child {
+    color: var(--color-danger);
+    font-weight: 700;
+}
