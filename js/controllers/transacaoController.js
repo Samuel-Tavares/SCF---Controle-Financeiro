@@ -8,6 +8,7 @@ import {
 
 import { renderizarTransacoes, confirmarExclusao } from "../views/transacaoView.js";
 import { renderizarResumo } from "../views/resumoView.js";
+import { atualizarListaOrcamentosCategoria } from "../controllers/orcamentoCategoriaController.js"
 
 let idTransacaoEmEdicao = null;
 
@@ -85,6 +86,7 @@ function tratarExclusaoTransacao(id) {
 
     atualizarListaTransacoes();
     atualizarResumoFinanceiro();
+    atualizarListaOrcamentosCategoria();
 }
 
 export function inicializarTransacaoController() {
@@ -128,6 +130,7 @@ export function inicializarTransacaoController() {
         restaurarModoCadastro();
         atualizarListaTransacoes();
         atualizarResumoFinanceiro();
+        atualizarListaOrcamentosCategoria();
     });
 }
 
