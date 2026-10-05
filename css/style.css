@@ -246,3 +246,65 @@ section h2 {
         grid-template-columns: 1fr;
     }
 }
+
+#form-novo-orcamento {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--spacing-md);
+    align-items: end;
+}
+
+#form-novo-orcamento button {
+    grid-column: 1 / -1;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: 0;
+    border-radius: var(--border-radius);
+    background-color: var(--color-primary);
+    color: var(--color-surface);
+    cursor: pointer;
+    font: inherit;
+    font-weight: 600;
+    transition: background-color 0.2s ease;
+}
+
+#form-novo-orcamento button:hover {
+    background-color: var(--color-primary-hover);
+}
+
+#form-novo-orcamento button:focus-visible {
+    outline: 3px solid var(--color-focus);
+    outline-offset: 2px;
+}
+
+#tabela-orcamentos-container {
+    margin-top: var(--spacing-lg);
+    overflow-x: auto;
+}
+
+#tabela-orcamentos-container table {
+    width: 100%;
+    min-width: 760px;
+    border-collapse: collapse;
+}
+
+#tabela-orcamentos-container th,
+#tabela-orcamentos-container td {
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-bottom: 1px solid var(--color-border);
+    text-align: left;
+}
+
+#tabela-orcamentos-container thead {
+    background-color: var(--color-background);
+}
+
+#tabela-orcamentos-container th:nth-child(n + 3),
+#tabela-orcamentos-container td:nth-child(n + 3) {
+    text-align: right;
+}
+
+@media (max-width: 700px) {
+    #form-novo-orcamento {
+        grid-template-columns: 1fr;
+    }
+}
