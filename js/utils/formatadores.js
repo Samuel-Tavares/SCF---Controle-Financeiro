@@ -19,3 +19,14 @@ export function formatarPorcentagem(valor) {
         maximumFractionDigits: 2
     }).format(valor / 100);
 }
+
+export function formatarMesReferencia(mesReferencia) {
+    const [ano, mes] = mesReferencia.split("-").map(Number);
+
+    const data = new Date(ano, mes - 1, 1);
+
+    return new Intl.DateTimeFormat("pt-BR", {
+        month: "long",
+        year: "numeric"
+    }).format(data);
+}
