@@ -104,8 +104,82 @@
 
                 <article class="resumo-card">
                     <h3>Taxa de economia</h3>
-                    <p id="taxa-economia">R$ 0,00%</p>
+                    <p id="taxa-economia">0,00%</p>
                 </article>
+            </div>
+        </section>
+
+        <section id="orcamentos-categoria">
+            <h2>Orçamento por categoria</h2>
+
+            <form id="form-novo-orcamento">
+                <div class="form-group">
+                    <label for="orcamento-categoria">Categoria</label>
+
+                    <select
+                        id="orcamento-categoria"
+                        name="categoria"
+                        required
+                    >
+                        <option value="" selected disabled>
+                            selecione
+                        </option>
+                        <option value="alimentacao">Alimentação</option>
+                        <option value="educacao">Educação</option>
+                        <option value="lazer">Lazer</option>
+                        <option value="moradia">Moradia</option>
+                        <option value="saude">Saúde</option>
+                        <option value="transporte">Transporte</option>
+                        <option value="outros">Outros</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="orcamento-valor-limite">
+                        Limite de gastos
+                    </label>
+
+                    <input
+                        type="number"
+                        id="orcamento-valor-limite"
+                        name="valorLimite"
+                        min="0.01"
+                        step="0.01"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="orcamento-mes-referencia">
+                        Mês de referência
+                    </label>
+
+                    <input
+                        type="month"
+                        id="orcamento-mes-referencia"
+                        name="mesReferencia"
+                        required
+                    >
+                </div>
+
+                <button type="submit">Cadastrar orçamento</button>
+            </form>
+
+            <div id="tabela-orcamentos-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th scope="col">Categoria</th>
+                            <th scope="col">Mês</th>
+                            <th scope="col">Limite</th>
+                            <th scope="col">Gasto</th>
+                            <th scope="col">Restante</th>
+                            <th scope="col">Utilizado</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="corpo-tabela-orcamentos"></tbody>
+                </table>
             </div>
         </section>
 
