@@ -11,15 +11,31 @@ function criarCelula(conteudo) {
     return celula;
 }
 
-export function renderizarOrcamentosCategoria(orcamentos) {
-    const corpoTabela = document.querySelector(
-        "#corpo-tabela-orcamentos"
+function criarBotaoExcluir(id, aoExcluir) {
+    const botao = document.createElement("button");
+
+    botao.type = "button";
+    botao.textContent = "Excluir";
+    botao.classList.add("botao-excluir");
+
+    botao.addEventListener("click", () => {
+        aoExcluir(id);
+    });
+
+    return botao;
+}
+
+export function confirmarExclusaoOrcamento() {
+    return window.confirm(
+        "Deseja realmente excluir este orçamento?"
     );
+}
+
+export function renderizarOrcamentosCategoria(orcamentos, aoExcluir) {
+    const corpoTabela = document.querySelector("#corpo-tabela-orcamentos");
 
     if (!corpoTabela) {
-        throw new Error(
-            "Corpo da tabela de orçamentos não encontrado."
-        );
+        throw new Error("Corpo da tabela de orçamentos não encontrado.");
     }
 
     corpoTabela.replaceChildren();
@@ -27,9 +43,9 @@ export function renderizarOrcamentosCategoria(orcamentos) {
     if (orcamentos.length === 0) {
         const linha = document.createElement("tr");
 
-        const celula = criarCelula("Nenhum orçamento cadastrado");
+        const celula = criarCelula("Nenhum orçamento cadastrado.");
 
-        celula.colSpan = 6;
+        celula.colSpan = 7;
 
         linha.append(celula);
         corpoTabela.append(linha);
@@ -39,6 +55,7 @@ export function renderizarOrcamentosCategoria(orcamentos) {
 
     orcamentos.forEach((orcamento) => {
         const linha = document.createElement("tr");
+        const celulaAcoes = criarCelula("");
 
         linha.dataset.id = orcamento.id;
 
@@ -48,29 +65,20 @@ export function renderizarOrcamentosCategoria(orcamentos) {
             linha.classList.add("orcamento-alerta");
         }
 
-        linha.append(
-            criarCelula(orcamento.categoria),
-            criarCelula(
-                formatarMesReferencia(
-                    orcamento.mesReferencia
-                )
-            ),
-            criarCelula(
-                formatarMoeda(orcamento.valorLimite)
-            ),
-            criarCelula(
-                formatarMoeda(orcamento.valorGasto)
-            ),
-            criarCelula(
-                formatarMoeda(orcamento.valorRestante)
-            ),
-            criarCelula(
-                formatarPorcentagem(
-                    orcamento.percentualUtilizado
-                )
-            )
+        celulaAcoes.append(
+            criarBotaoExcluir(orcamento.id, aoExcluir)
         );
 
+        linha.append(
+            criarCelula(orcamento.categoria),
+            criarCelula(formatarMesReferencia(orcamento.mesReferencia)),
+            criarCelula(formatarMoeda(orcamento.valorLimite)),
+            criarCelula(formatarMoeda(orcamento.valorGasto)),
+            criarCelula(formatarMoeda(orcamento.valorRestante)),
+            criarCelula(formatarPorcentagem(orcamento.percentualUtilizado)),
+            celulaAcoes
+        );
+        
         corpoTabela.append(linha);
     });
 }
