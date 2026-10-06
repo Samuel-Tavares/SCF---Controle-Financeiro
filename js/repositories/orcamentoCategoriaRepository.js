@@ -38,3 +38,29 @@ export function salvarOrcamento(orcamento) {
         throw new Error(`Erro ao salvar orçamento: ${error.message}`);
     }
 }
+
+export function removerOrcamento(id) {
+    try {
+        const orcamentos = carregarOrcamentos();
+
+        const indice = orcamentos.findIndex(
+            (orcamento) =>
+                orcamento.id === id
+        );
+
+        if (indice === -1) {
+            throw new Error("Orçamento não encontrado.");
+        }
+
+        const [orcamentoRemovido] = orcamentos.splice(indice, 1);
+
+        localStorage.setItem(
+            CHAVE,
+            JSON.stringify(orcamentos)
+        );
+
+        return orcamentoRemovido;
+    } catch (error) {
+        throw new Error(`Erro ao remover orçamento: ${error.message}`);
+    }
+}
