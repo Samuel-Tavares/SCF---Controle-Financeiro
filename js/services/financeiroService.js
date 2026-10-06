@@ -10,7 +10,11 @@ import {
 import ResumoFinanceiro from "../models/ResumoFinanceiro.js";
 import OrcamentoCategoria from "../models/OrcamentoCategoria.js"
 import { validarOrcamentoCategoria } from "../utils/validarOrcamentoCategoria.js"
-import { carregarOrcamentos, salvarOrcamento} from "../repositories/orcamentoCategoriaRepository.js"
+import {
+    carregarOrcamentos, 
+    salvarOrcamento,
+    removerOrcamento as removerOrcamentoRepository
+} from "../repositories/orcamentoCategoriaRepository.js";
 
 export function cadastrarTransacao(dados) {
     const erros = validarTransacao(dados);
@@ -271,6 +275,24 @@ export function listarOrcamentosCategoria() {
         return {
             sucesso: false,
             orcamentos: [],
+            erros: [error.message]
+        };
+    }
+}
+
+export function excluirOrcamentoCategoria(id) {
+    try {
+        const orcamentoRemovido = removerOrcamentoRepository(id);
+
+        return {
+            sucesso: true,
+            orcamento: orcamentoRemovido,
+            erros: []
+        };
+    } catch (error) {
+        return {
+            sucesso: false,
+            orcamento: null,
             erros: [error.message]
         };
     }
