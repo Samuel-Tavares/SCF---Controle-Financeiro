@@ -13,7 +13,8 @@ import { validarOrcamentoCategoria } from "../utils/validarOrcamentoCategoria.js
 import {
     carregarOrcamentos, 
     salvarOrcamento,
-    removerOrcamento as removerOrcamentoRepository
+    removerOrcamento as removerOrcamentoRepository,
+    atualizarOrcamento as atualizarOrcamentoRepository
 } from "../repositories/orcamentoCategoriaRepository.js";
 
 export function cadastrarTransacao(dados) {
@@ -289,6 +290,56 @@ export function excluirOrcamentoCategoria(id) {
             orcamento: orcamentoRemovido,
             erros: []
         };
+    } catch (error) {
+        return {
+            sucesso: false,
+            orcamento: null,
+            erros: [error.message]
+        };
+    }
+}
+
+export function editarOrcamentoCategoria(id, dados) {
+    const erros = validarOrcamentoCategoria(dados);
+
+    if (erros.length > 0) {
+        return {
+            sucesso: false,
+            orcamento: null,
+            erros
+        };
+    }
+
+    try {
+        const orcamentos = carregarOrcamentos();
+
+        const orcamentoDuplicado = orcamentos.some(
+            (orcamento) =>
+                orcamento.id != id
+                && orcamento.categoria === dados.categoria
+                && orcamento.mesReferencia === dados.mesReferencia
+        );
+
+        if (orcamentoDuplicado) {
+            return {
+                sucesso: false,
+                orcamento: null,
+                erros: ["Já existe um orçamento para esta categoria e mês."]
+            };
+        }
+
+        const orcamentoAtualizado = new OrcamentoCategoria({
+            ...dados,
+            id
+        });
+
+        const orcamentoSalvo = atualizarOrcamentoRepository(orcamentoAtualizado);
+
+        return {
+            sucesso: true,
+            orcamento: orcamentoSalvo,
+            erros: []
+        }
     } catch (error) {
         return {
             sucesso: false,
