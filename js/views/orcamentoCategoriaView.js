@@ -25,13 +25,27 @@ function criarBotaoExcluir(id, aoExcluir) {
     return botao;
 }
 
+function criarBotaoEditar(orcamento, aoEditar) {
+    const botao = document.createElement("button");
+
+    botao.type = "button";
+    botao.textContent = "Editar";
+    botao.classList.add("botao-editar");
+
+    botao.addEventListener("click", () => {
+        aoEditar(orcamento);
+    });
+
+    return botao;
+}
+
 export function confirmarExclusaoOrcamento() {
     return window.confirm(
         "Deseja realmente excluir este orçamento?"
     );
 }
 
-export function renderizarOrcamentosCategoria(orcamentos, aoExcluir) {
+export function renderizarOrcamentosCategoria(orcamentos, aoEditar, aoExcluir) {
     const corpoTabela = document.querySelector("#corpo-tabela-orcamentos");
 
     if (!corpoTabela) {
@@ -57,6 +71,8 @@ export function renderizarOrcamentosCategoria(orcamentos, aoExcluir) {
         const linha = document.createElement("tr");
         const celulaAcoes = criarCelula("");
 
+        celulaAcoes.classList.add("acoes-orcamento");
+
         linha.dataset.id = orcamento.id;
 
         if (orcamento.percentualUtilizado >= 100) {
@@ -66,6 +82,7 @@ export function renderizarOrcamentosCategoria(orcamentos, aoExcluir) {
         }
 
         celulaAcoes.append(
+            criarBotaoEditar(orcamento, aoEditar),
             criarBotaoExcluir(orcamento.id, aoExcluir)
         );
 

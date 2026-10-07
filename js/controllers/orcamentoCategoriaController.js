@@ -1,6 +1,7 @@
 import {
     cadastrarOrcamentoCategoria,
     listarOrcamentosCategoria,
+    editarOrcamentoCategoria,
     excluirOrcamentoCategoria
 } from "../services/financeiroService.js";
 
@@ -9,19 +10,27 @@ import {
     confirmarExclusaoOrcamento
 } from "../views/orcamentoCategoriaView.js";
 
-//PUT
+let idOrcamentoEmEdicao = null;
+
+
 export function atualizarListaOrcamentosCategoria() {
     const resultado = listarOrcamentosCategoria();
 
     if (!resultado.sucesso) {
         console.error(resultado.erros);
 
-        renderizarOrcamentosCategoria([], tratarExclusaoOrcamento);
+        renderizarOrcamentosCategoria(
+            [],
+            tratarEdicaoOrcamento,
+            tratarExclusaoOrcamento);
 
         return;
     }
 
-    renderizarOrcamentosCategoria(resultado.orcamentos, tratarExclusaoOrcamento);
+    renderizarOrcamentosCategoria(
+        resultado.orcamentos,
+        tratarEdicaoOrcamento,
+        tratarExclusaoOrcamento);
 }
 
 //DELETE
@@ -37,6 +46,10 @@ function tratarExclusaoOrcamento(id) {
     if (!resultado.sucesso) {
         console.error(resultado.erros);
         return;
+    }
+
+    if (idOrcamentoEmEdicao === id) {
+        restaurarModoCadastroOrcamento();
     }
 
     atualizarListaOrcamentosCategoria();
@@ -71,16 +84,57 @@ export function inicializarOrcamentoCategoriaController() {
             mesReferencia: inputMesReferencia.value
         };
 
-        const resultado = cadastrarOrcamentoCategoria(
-            orcamento
-        );
+        const resultado = idOrcamentoEmEdicao
+            ? editarOrcamentoCategoria(
+                idOrcamentoEmEdicao,
+                orcamento
+            )
+            : cadastrarOrcamentoCategoria(orcamento);
 
         if(!resultado.sucesso) {
             console.error(resultado.erros);
             return;
         }
 
-        formulario.reset();
+        restaurarModoCadastroOrcamento();
         atualizarListaOrcamentosCategoria();
     })
+}
+
+function tratarEdicaoOrcamento(orcamento) {
+    idOrcamentoEmEdicao = orcamento.id;
+
+    document.querySelector("#orcamento-categoria").value =
+        orcamento.categoria;
+
+    document.querySelector("#orcamento-valor-limite").value =
+        orcamento.valorLimite;
+
+    document.querySelector("#orcamento-mes-referencia").value =
+        orcamento.mesReferencia;
+
+    const botaoEnviar = document.querySelector(
+        '#form-novo-orcamento button[type="submit"]'
+    );
+
+    botaoEnviar.textContent = "Salvar alterações";
+
+    document.querySelector("#orcamentos-categoria").scrollIntoView({
+        behavior: "smooth"
+    });
+}
+
+function restaurarModoCadastroOrcamento() {
+    idOrcamentoEmEdicao = null;
+
+    const formulario = document.querySelector(
+        "#form-novo-orcamento"
+    );
+
+    const botaoEnviar = formulario.querySelector(
+        'button[type="submit"]'
+    );
+
+    formulario.reset();
+    botaoEnviar.textContent = "Cadastrar orçamento";
 }
