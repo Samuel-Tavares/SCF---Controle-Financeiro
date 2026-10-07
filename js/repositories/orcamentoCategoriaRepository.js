@@ -64,3 +64,30 @@ export function removerOrcamento(id) {
         throw new Error(`Erro ao remover orçamento: ${error.message}`);
     }
 }
+
+export function atualizarOrcamento(orcamentoAtualizado) {
+    try {
+        const orcamentos = carregarOrcamentos();
+
+
+        const indice = orcamentos.findIndex(
+            (orcamento) =>
+                orcamento.id === orcamentoAtualizado.id
+        );
+
+        if (indice === -1) {
+            throw new Error("Orçamento não encontrado.");
+        }
+
+        orcamentos[indice] = orcamentoAtualizado;
+
+        localStorage.setItem(
+            CHAVE,
+            JSON.stringify(orcamentos)
+        );
+
+        return orcamentoAtualizado;
+    } catch (error) {
+        throw new Error(`Erro ao atualizar orçamento: ${error.message}`);
+    }
+}
