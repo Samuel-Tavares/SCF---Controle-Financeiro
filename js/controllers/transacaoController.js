@@ -1,4 +1,4 @@
-import { 
+import {
     cadastrarTransacao, 
     listarTransacoes,
     editarTransacao,
@@ -8,15 +8,27 @@ import {
 
 import { renderizarTransacoes, confirmarExclusao } from "../views/transacaoView.js";
 import { renderizarResumo } from "../views/resumoView.js";
-import { atualizarListaOrcamentosCategoria } from "../controllers/orcamentoCategoriaController.js"
+import {
+    atualizarListaOrcamentosCategoria
+} from "../controllers/orcamentoCategoriaController.js"
+
+import {
+    exibirMensagem,
+    limparMensagem
+} from "../views/mensagemView.js";
 
 let idTransacaoEmEdicao = null;
+
+const SELETOR_MENSAGEM = "#mensagem-transacao";
 
 function atualizarListaTransacoes() {
     const resultado = listarTransacoes();
 
     if (!resultado.sucesso) {
-        console.error(resultado.erros);
+        exibirMensagem(
+            SELETOR_MENSAGEM,
+            resultado.erros
+        );
         renderizarTransacoes([], tratarEdicaoTransacao, tratarExclusaoTransacao);
         return;
     }
@@ -29,6 +41,8 @@ function atualizarListaTransacoes() {
 }
 
 function tratarEdicaoTransacao(transacao) {
+    limparMensagem(SELETOR_MENSAGEM);
+
     idTransacaoEmEdicao = transacao.id;
 
     document.querySelector("#tipo").value = transacao.tipo;
@@ -73,10 +87,16 @@ function tratarExclusaoTransacao(id) {
         return;
     }
 
+    limparMensagem(SELETOR_MENSAGEM);
+
     const resultado = excluirTransacao(id);
 
     if (!resultado.sucesso) {
-        console.error(resultado.erros);
+        exibirMensagem(
+            SELETOR_MENSAGEM,
+            resultado.erros
+        );
+
         return;
     }
 
@@ -87,6 +107,12 @@ function tratarExclusaoTransacao(id) {
     atualizarListaTransacoes();
     atualizarResumoFinanceiro();
     atualizarListaOrcamentosCategoria();
+
+    exibirMensagem(
+        SELETOR_MENSAGEM,
+        "Transação excluída com sucesso.",
+        "sucesso"
+    );
 }
 
 export function inicializarTransacaoController() {
@@ -106,6 +132,10 @@ export function inicializarTransacaoController() {
 
     formulario.addEventListener('submit', function(evento) {
         evento.preventDefault();
+
+        limparMensagem(SELETOR_MENSAGEM);
+
+        const estaEditando = idTransacaoEmEdicao !== null;
         
         const transacao = {
             tipo: inputTipo.value,
@@ -118,12 +148,16 @@ export function inicializarTransacaoController() {
             observacao: inputObservacao.value.trim()
         };
 
-        const resultado = idTransacaoEmEdicao
+        const resultado = estaEditando
             ? editarTransacao(idTransacaoEmEdicao, transacao)
             : cadastrarTransacao(transacao);
 
         if (!resultado.sucesso) {
-            console.error(resultado.erros);
+            exibirMensagem(
+                SELETOR_MENSAGEM,
+                resultado.erros
+            )
+
             return;
         }
         
@@ -131,6 +165,16 @@ export function inicializarTransacaoController() {
         atualizarListaTransacoes();
         atualizarResumoFinanceiro();
         atualizarListaOrcamentosCategoria();
+
+        const mensagemSucesso = estaEditando
+            ? "Transação atualizada com sucesso."
+            : "Transação cadastrada com sucesso."
+
+        exibirMensagem(
+            SELETOR_MENSAGEM,
+            mensagemSucesso,
+            "sucesso"
+        );
     });
 }
 
