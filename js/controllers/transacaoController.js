@@ -45,19 +45,15 @@ function tratarEdicaoTransacao(transacao) {
 
     idTransacaoEmEdicao = transacao.id;
 
+    document.querySelector("#cancelar-edicao-transacao").hidden = false;
     document.querySelector("#tipo").value = transacao.tipo;
-    document.querySelector("#recorrencia").value =
-        transacao.recorrencia;
-    document.querySelector("#essencialidade").value =
-        transacao.essencialidade;
-    document.querySelector("#descricao").value =
-        transacao.descricao;
+    document.querySelector("#recorrencia").value = transacao.recorrencia;
+    document.querySelector("#essencialidade").value = transacao.essencialidade;
+    document.querySelector("#descricao").value = transacao.descricao;
     document.querySelector("#valor").value = transacao.valor;
-    document.querySelector("#categoria").value =
-        transacao.categoria;
+    document.querySelector("#categoria").value = transacao.categoria;
     document.querySelector("#data").value = transacao.data;
-    document.querySelector("#observacao").value =
-        transacao.observacao ?? "";
+    document.querySelector("#observacao").value = transacao.observacao ?? "";
 
     const botaoEnviar = document.querySelector(
         '#form-nova-transacao button[type="submit"]'
@@ -75,9 +71,11 @@ function restaurarModoCadastro() {
 
     const formulario = document.querySelector("#form-nova-transacao");
     const botaoEnviar = formulario.querySelector('button[type="submit"]');
+    const botaoCancelar = document.querySelector("#cancelar-edicao-transacao");
 
     formulario.reset();
     botaoEnviar.textContent = "Cadastrar transação";
+    botaoCancelar.hidden = true;
 }
 
 function tratarExclusaoTransacao(id) {
@@ -126,9 +124,15 @@ export function inicializarTransacaoController() {
     const inputCategoria = document.querySelector('#categoria');
     const inputData = document.querySelector('#data');
     const inputObservacao = document.querySelector('#observacao');
+    const botaoCancelar = document.querySelector("#cancelar-edicao-transacao");
 
     atualizarListaTransacoes();
     atualizarResumoFinanceiro();
+
+    botaoCancelar.addEventListener("click", function() {
+        restaurarModoCadastro();
+        limparMensagem(SELETOR_MENSAGEM);
+    })
 
     formulario.addEventListener('submit', function(evento) {
         evento.preventDefault();
