@@ -84,7 +84,19 @@
                     class="mensagem-formulario"
                     aria-live="polite"
                 ></p>
-                <button type="submit">Cadastrar transação</button>
+
+                <div class="acoes-formulario">
+                    <button type="submit">Cadastrar transação</button>
+
+                    <button
+                        type="button"
+                        id="cancelar-edicao-transacao"
+                        class="botao-cancelar"
+                        hidden
+                    >
+                        Cancelar edição
+                    </button>
+                </div>
             </form>
         </section>
 
@@ -172,7 +184,19 @@
                     class="mensagem-formulario"
                     aria-live="polite"
                 ></p>
-                <button type="submit">Cadastrar orçamento</button>
+
+                <div class="acoes-formulario">
+                    <button type="submit">Cadastrar orçamento</button>
+
+                    <button
+                        type="button"
+                        id="cancelar-edicao-orcamento"
+                        class="botao-cancelar"
+                        hidden
+                    >
+                        Cancelar edição
+                    </button>
+                </div>
             </form>
 
             <div id="tabela-orcamentos-container">

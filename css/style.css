@@ -358,3 +358,27 @@ section h2 {
     background-color: #f0fdf4;
     color: var(--color-success);
 }
+
+.acoes-formulario {
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+#form-novo-orcamento .acoes-formulario {
+    grid-column: 1 / -1;
+}
+
+.acoes-formulario button {
+    flex: 1;
+}
+
+#form-nova-transacao .botao-cancelar,
+#form-novo-orcamento .botao-cancelar {
+    background-color: var(--color-border);
+    color: var(--color-text);
+}
+
+#form-nova-transacao .botao-cancelar:hover,
+#form-novo-orcamento .botao-cancelar:hover {
+    background-color: #9ca3af;
+}
