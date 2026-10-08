@@ -348,3 +348,37 @@ export function editarOrcamentoCategoria(id, dados) {
         };
     }
 }
+
+export function filtrarTransacoes({
+    tipo = "",
+    categoria = "",
+    mesReferencia = ""
+} = {}) {
+    try {
+        const transacoes = carregarTransacoes();
+
+        const transacoesFiltradas = transacoes.filter(
+            (transacao) => {
+                const correspondeAoTipo = tipo === "" || transacao.tipo === tipo;
+
+                const correspondeACategoria = categoria === "" || transacao.categoria === categoria;
+
+                const correspondeAoMes = mesReferencia === "" || transacao.data.startsWith(mesReferencia);
+
+                return (correspondeAoTipo && correspondeACategoria && correspondeAoMes);
+            }
+        );
+
+        return {
+            sucesso: true,
+            transacoes: transacoesFiltradas,
+            erros: []
+        };
+    } catch (error) {
+        return {
+            sucesso: false,
+            transacoes: [],
+            erros: [error.message]
+        };
+    }
+}
