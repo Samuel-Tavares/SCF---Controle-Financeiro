@@ -10,14 +10,23 @@ import {
     confirmarExclusaoOrcamento
 } from "../views/orcamentoCategoriaView.js";
 
+import {
+    exibirMensagem,
+    limparMensagem
+} from "../views/mensagemView.js";
+
 let idOrcamentoEmEdicao = null;
+const SELETOR_MENSAGEM = "#mensagem-orcamento";
 
 
 export function atualizarListaOrcamentosCategoria() {
     const resultado = listarOrcamentosCategoria();
 
     if (!resultado.sucesso) {
-        console.error(resultado.erros);
+        exibirMensagem(
+            SELETOR_MENSAGEM,
+            resultado.erros
+        );
 
         renderizarOrcamentosCategoria(
             [],
@@ -41,10 +50,15 @@ function tratarExclusaoOrcamento(id) {
         return;
     }
 
+    limparMensagem(SELETOR_MENSAGEM);
+
     const resultado = excluirOrcamentoCategoria(id);
 
     if (!resultado.sucesso) {
-        console.error(resultado.erros);
+        exibirMensagem(
+            SELETOR_MENSAGEM,
+            resultado.erros
+        );
         return;
     }
 
@@ -53,6 +67,12 @@ function tratarExclusaoOrcamento(id) {
     }
 
     atualizarListaOrcamentosCategoria();
+
+    exibirMensagem(
+        SELETOR_MENSAGEM,
+        "Orçamento excluído com sucesso",
+        "sucesso"
+    );
 }
 
 //POST
@@ -78,13 +98,17 @@ export function inicializarOrcamentoCategoriaController() {
     formulario.addEventListener("submit", function (evento) {
         evento.preventDefault();
 
+        limparMensagem(SELETOR_MENSAGEM);
+
+        const estaEditando = idOrcamentoEmEdicao != null;
+
         const orcamento = {
             categoria: inputCategoria.value,
             valorLimite: Number(inputValorLimite.value),
             mesReferencia: inputMesReferencia.value
         };
 
-        const resultado = idOrcamentoEmEdicao
+        const resultado = estaEditando
             ? editarOrcamentoCategoria(
                 idOrcamentoEmEdicao,
                 orcamento
@@ -92,16 +116,29 @@ export function inicializarOrcamentoCategoriaController() {
             : cadastrarOrcamentoCategoria(orcamento);
 
         if(!resultado.sucesso) {
-            console.error(resultado.erros);
+            exibirMensagem(SELETOR_MENSAGEM, resultado.erros);
             return;
         }
 
         restaurarModoCadastroOrcamento();
         atualizarListaOrcamentosCategoria();
+
+        const mensagemSucesso = estaEditando
+            ? "Orçamento atualizado com sucesso."
+            : "Orçamento cadastrado com sucesso."
+
+        exibirMensagem(
+            SELETOR_MENSAGEM,
+            mensagemSucesso,
+            "sucesso"
+        );
     })
 }
 
+//PUT
 function tratarEdicaoOrcamento(orcamento) {
+    limparMensagem(SELETOR_MENSAGEM);
+
     idOrcamentoEmEdicao = orcamento.id;
 
     document.querySelector("#orcamento-categoria").value =
