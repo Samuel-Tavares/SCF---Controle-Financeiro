@@ -93,7 +93,14 @@ export function inicializarOrcamentoCategoriaController() {
         "#orcamento-mes-referencia"
     );
 
+    const botaoCancelar = document.querySelector("#cancelar-edicao-orcamento");
+
     atualizarListaOrcamentosCategoria();
+
+    botaoCancelar.addEventListener("click", function () {
+        restaurarModoCadastroOrcamento();
+        limparMensagem(SELETOR_MENSAGEM);
+    })
 
     formulario.addEventListener("submit", function (evento) {
         evento.preventDefault();
@@ -141,14 +148,10 @@ function tratarEdicaoOrcamento(orcamento) {
 
     idOrcamentoEmEdicao = orcamento.id;
 
-    document.querySelector("#orcamento-categoria").value =
-        orcamento.categoria;
-
-    document.querySelector("#orcamento-valor-limite").value =
-        orcamento.valorLimite;
-
-    document.querySelector("#orcamento-mes-referencia").value =
-        orcamento.mesReferencia;
+    document.querySelector("#orcamento-categoria").value = orcamento.categoria;
+    document.querySelector("#orcamento-valor-limite").value = orcamento.valorLimite;
+    document.querySelector("#orcamento-mes-referencia").value = orcamento.mesReferencia;
+    document.querySelector("#cancelar-edicao-orcamento").hidden = false;
 
     const botaoEnviar = document.querySelector(
         '#form-novo-orcamento button[type="submit"]'
@@ -172,6 +175,9 @@ function restaurarModoCadastroOrcamento() {
         'button[type="submit"]'
     );
 
+    const botaoCancelar = document.querySelector("#cancelar-edicao-orcamento");
+
     formulario.reset();
     botaoEnviar.textContent = "Cadastrar orçamento";
+    botaoCancelar.hidden = true;
 }
