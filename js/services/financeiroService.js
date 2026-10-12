@@ -357,17 +357,23 @@ export function filtrarTransacoes({
     try {
         const transacoes = carregarTransacoes();
 
-        const transacoesFiltradas = transacoes.filter(
-            (transacao) => {
-                const correspondeAoTipo = tipo === "" || transacao.tipo === tipo;
+        const transacoesFiltradas = transacoes
+            .filter((transacao) => {
+                const correspondeAoTipo =
+                    tipo === "" || transacao.tipo === tipo;
 
-                const correspondeACategoria = categoria === "" || transacao.categoria === categoria;
+                const correspondeACategoria =
+                    categoria === "" || transacao.categoria === categoria;
 
-                const correspondeAoMes = mesReferencia === "" || transacao.data.startsWith(mesReferencia);
+                const correspondeAoMes =
+                    mesReferencia === "" || transacao.data.startsWith(mesReferencia);
 
-                return (correspondeAoTipo && correspondeACategoria && correspondeAoMes);
-            }
-        );
+                return (
+                    correspondeAoTipo
+                    && correspondeACategoria
+                    && correspondeAoMes);
+            })
+            .sort((transacaoA, transacaoB) => transacaoB.data.localeCompare(transacaoA.data));
 
         return {
             sucesso: true,
