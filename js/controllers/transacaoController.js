@@ -1,28 +1,27 @@
 import {
-    cadastrarTransacao, 
-    listarTransacoes,
+    cadastrarTransacao,
     editarTransacao,
     excluirTransacao,
-    calcularResumo
+    calcularResumo,
+    filtrarTransacoes
 } from "../services/financeiroService.js";
-
 import { renderizarTransacoes, confirmarExclusao } from "../views/transacaoView.js";
 import { renderizarResumo } from "../views/resumoView.js";
 import {
     atualizarListaOrcamentosCategoria
 } from "../controllers/orcamentoCategoriaController.js"
-
 import {
     exibirMensagem,
     limparMensagem
 } from "../views/mensagemView.js";
 
 let idTransacaoEmEdicao = null;
+let filtrosAtivos = {};
 
 const SELETOR_MENSAGEM = "#mensagem-transacao";
 
 function atualizarListaTransacoes() {
-    const resultado = listarTransacoes();
+    const resultado = filtrarTransacoes(filtrosAtivos);
 
     if (!resultado.sucesso) {
         exibirMensagem(
@@ -125,6 +124,11 @@ export function inicializarTransacaoController() {
     const inputData = document.querySelector('#data');
     const inputObservacao = document.querySelector('#observacao');
     const botaoCancelar = document.querySelector("#cancelar-edicao-transacao");
+    const formularioFiltros = document.querySelector("#form-filtros-transacoes");
+    const filtroTipo = document.querySelector("#filtro-tipo");
+    const filtroCategoria = document.querySelector("#filtro-categoria");
+    const filtroMes = document.querySelector("#filtro-mes");
+    const botaoLimparFiltros = document.querySelector("#limpar-filtros-transacoes");
 
     atualizarListaTransacoes();
     atualizarResumoFinanceiro();
@@ -133,6 +137,30 @@ export function inicializarTransacaoController() {
         restaurarModoCadastro();
         limparMensagem(SELETOR_MENSAGEM);
     })
+
+    formularioFiltros.addEventListener(
+        "submit",
+        function (eventos) {
+            eventos.preventDefault();
+
+            filtrosAtivos = {
+                tipo: filtroTipo.value,
+                categoria: filtroCategoria.value,
+                mesReferencia: filtroMes.value
+            };
+
+            atualizarListaTransacoes();
+        }
+    )
+
+    botaoLimparFiltros.addEventListener(
+        "click",
+        function () {
+            formularioFiltros.reset();
+            filtrosAtivos = {};
+            atualizarListaTransacoes();
+        }
+    )
 
     formulario.addEventListener('submit', function(evento) {
         evento.preventDefault();
