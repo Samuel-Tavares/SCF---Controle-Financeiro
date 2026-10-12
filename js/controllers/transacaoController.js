@@ -32,10 +32,19 @@ function atualizarListaTransacoes() {
         return;
     }
 
+    const possuiFiltrosAtivos = Object.values(
+        filtrosAtivos
+    ).some((valor) => valor !== "");
+
+    const mensagemListaVazia = possuiFiltrosAtivos
+        ? "Nenhuma transação encontrada para os filtros selecionados."
+        : "Nenhuma transação cadastrada.";
+
     renderizarTransacoes(
         resultado.transacoes,
         tratarEdicaoTransacao,
-        tratarExclusaoTransacao
+        tratarExclusaoTransacao,
+        mensagemListaVazia
     );
 }
 

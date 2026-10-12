@@ -24,7 +24,12 @@ export function confirmarExclusao() {
     );
 }
 
-export function renderizarTransacoes(transacoes, aoEditar, aoExcluir) {
+export function renderizarTransacoes(
+    transacoes,
+    aoEditar,
+    aoExcluir,
+    mensagemListaVazia = "Nenhuma transação cadastrada."
+) {
     const corpoTabela = document.querySelector("#corpo-tabela-transacoes");
 
     if (!corpoTabela) {
@@ -35,7 +40,7 @@ export function renderizarTransacoes(transacoes, aoEditar, aoExcluir) {
 
     if (transacoes.length === 0) {
         const linha = document.createElement("tr");
-        const celula = criarCelula("Nenhuma transação cadastrada.");
+        const celula = criarCelula(mensagemListaVazia);
 
         celula.colSpan = 6;
         linha.append(celula);
