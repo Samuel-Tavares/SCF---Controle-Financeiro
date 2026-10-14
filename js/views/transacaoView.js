@@ -82,3 +82,21 @@ export function renderizarTransacoes(
         corpoTabela.append(linha);
     });
 }
+
+export function renderizarPaginacao({
+    paginaAtual,
+    totalPaginas
+}) {
+    const botaoAnterior = document.querySelector("#pagina-anterior");
+    const botaoProximaPagina = document.querySelector("#proxima-pagina");
+    const informacaoPagina = document.querySelector("#informacao-pagina");
+
+    if (!botaoAnterior || !botaoProximaPagina || !informacaoPagina) {
+        throw new Error("Controles de paginação não encontrados.");
+    }
+
+    informacaoPagina.textContent = `Página ${paginaAtual} de ${totalPaginas}`;
+
+    botaoAnterior.disabled = paginaAtual <= 1;
+    botaoProximaPagina.disabled = paginaAtual >= totalPaginas;
+}

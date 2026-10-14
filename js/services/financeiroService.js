@@ -1,8 +1,8 @@
 import { validarTransacao } from "../utils/validarTransacao.js";
 import Transacao from "../models/Transacao.js";
-import { 
-    salvarTransacao, 
-    carregarTransacoes, 
+import {
+    salvarTransacao,
+    carregarTransacoes,
     removerTransacao as removerTransacaoRepository,
     atualizarTransacao as atualizarTransacaoRepository
 } from "../repositories/transacaoRepository.js";
@@ -11,7 +11,7 @@ import ResumoFinanceiro from "../models/ResumoFinanceiro.js";
 import OrcamentoCategoria from "../models/OrcamentoCategoria.js"
 import { validarOrcamentoCategoria } from "../utils/validarOrcamentoCategoria.js"
 import {
-    carregarOrcamentos, 
+    carregarOrcamentos,
     salvarOrcamento,
     removerOrcamento as removerOrcamentoRepository,
     atualizarOrcamento as atualizarOrcamentoRepository
@@ -151,7 +151,7 @@ export function calcularResumo() {
         const taxaEconomia = receitasEmCentavos > 0 ? (
             (receitasEmCentavos - despesasEmCentavos) / receitasEmCentavos) * 100
             : 0;
-        
+
         const resumo = new ResumoFinanceiro({
             totalReceitas,
             totalDespesas,
@@ -188,7 +188,7 @@ export function cadastrarOrcamentoCategoria(dados) {
         const orcamentos = carregarOrcamentos();
 
         const orcamentoExistente = orcamentos.some(
-            (orcamento) => 
+            (orcamento) =>
                 orcamento.categoria === dados.categoria
                 && orcamento.mesReferencia === dados.mesReferencia
         );
@@ -235,7 +235,7 @@ export function listarOrcamentosCategoria() {
 
                 const gastoEmCentavos = transacoes.reduce(
                     (total, transacao) => {
-                        const pertenceAoOrcamento = 
+                        const pertenceAoOrcamento =
                         transacao.tipo === "despesa"
                         && transacao.categoria
                             === orcamento.categoria
@@ -387,4 +387,37 @@ export function filtrarTransacoes({
             erros: [error.message]
         };
     }
+}
+
+export function paginarTransacoes(
+    transacoes,
+    paginaAtual = 1,
+    itensPorPagina = 5
+) {
+    const totalItens = transacoes.length;
+    const totalPaginas = Math.max(
+        1,
+        Math.ceil(totalItens / itensPorPagina)
+    );
+
+    const paginaValida = Math.min(
+        Math.max(paginaAtual, 1),
+        totalPaginas
+    );
+
+    const indiceInicial = (
+        paginaValida - 1
+    ) * itensPorPagina;
+
+    const itens = transacoes.slice(
+        indiceInicial,
+        indiceInicial + itensPorPagina
+    );
+
+    return {
+        itens,
+        paginaAtual: paginaValida,
+        totalPaginas,
+        totalItens
+    };
 }

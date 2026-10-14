@@ -3,13 +3,22 @@ import {
     editarTransacao,
     excluirTransacao,
     calcularResumo,
-    filtrarTransacoes
+    filtrarTransacoes,
+    paginarTransacoes
 } from "../services/financeiroService.js";
-import { renderizarTransacoes, confirmarExclusao } from "../views/transacaoView.js";
+
+import {
+    renderizarTransacoes,
+    confirmarExclusao,
+    renderizarPaginacao
+} from "../views/transacaoView.js";
+
 import { renderizarResumo } from "../views/resumoView.js";
+
 import {
     atualizarListaOrcamentosCategoria
 } from "../controllers/orcamentoCategoriaController.js"
+
 import {
     exibirMensagem,
     limparMensagem
@@ -17,18 +26,24 @@ import {
 
 let idTransacaoEmEdicao = null;
 let filtrosAtivos = {};
+let paginaAtual = 1;
 
+const ITENS_POR_PAGINA = 5;
 const SELETOR_MENSAGEM = "#mensagem-transacao";
 
 function atualizarListaTransacoes() {
     const resultado = filtrarTransacoes(filtrosAtivos);
 
     if (!resultado.sucesso) {
+        paginaAtual = 1;
+
         exibirMensagem(
             SELETOR_MENSAGEM,
             resultado.erros
         );
         renderizarTransacoes([], tratarEdicaoTransacao, tratarExclusaoTransacao);
+
+        renderizarPaginacao({paginaAtual: 1, totalPaginas: 1});
         return;
     }
 
@@ -40,12 +55,18 @@ function atualizarListaTransacoes() {
         ? "Nenhuma transação encontrada para os filtros selecionados."
         : "Nenhuma transação cadastrada.";
 
+    const paginacao = paginarTransacoes(resultado.transacoes, paginaAtual, ITENS_POR_PAGINA);
+
+    paginaAtual = paginacao.paginaAtual;
+
     renderizarTransacoes(
-        resultado.transacoes,
+        paginacao.itens,
         tratarEdicaoTransacao,
         tratarExclusaoTransacao,
         mensagemListaVazia
     );
+
+    renderizarPaginacao(paginacao);
 }
 
 function tratarEdicaoTransacao(transacao) {
@@ -138,9 +159,21 @@ export function inicializarTransacaoController() {
     const filtroCategoria = document.querySelector("#filtro-categoria");
     const filtroMes = document.querySelector("#filtro-mes");
     const botaoLimparFiltros = document.querySelector("#limpar-filtros-transacoes");
+    const botaoPaginaAnterior = document.querySelector("#pagina-anterior");
+    const botaoProximaPagina = document.querySelector("#proxima-pagina");
 
     atualizarListaTransacoes();
     atualizarResumoFinanceiro();
+
+    botaoPaginaAnterior.addEventListener("click", function () {
+        paginaAtual -= 1;
+        atualizarListaTransacoes();
+    });
+
+    botaoProximaPagina.addEventListener("click", function () {
+        paginaAtual += 1;
+        atualizarListaTransacoes();
+    });
 
     botaoCancelar.addEventListener("click", function() {
         restaurarModoCadastro();
@@ -158,6 +191,7 @@ export function inicializarTransacaoController() {
                 mesReferencia: filtroMes.value
             };
 
+            paginaAtual = 1;
             atualizarListaTransacoes();
         }
     )
@@ -167,6 +201,7 @@ export function inicializarTransacaoController() {
         function () {
             formularioFiltros.reset();
             filtrosAtivos = {};
+            paginaAtual = 1;
             atualizarListaTransacoes();
         }
     )
@@ -203,6 +238,7 @@ export function inicializarTransacaoController() {
         }
         
         restaurarModoCadastro();
+        paginaAtual = 1;
         atualizarListaTransacoes();
         atualizarResumoFinanceiro();
         atualizarListaOrcamentosCategoria();

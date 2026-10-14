@@ -437,3 +437,43 @@ section h2 {
         grid-template-columns: 1fr;
     }
 }
+
+.paginacao {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-lg);
+}
+
+.paginacao button {
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: 0;
+    border-radius: var(--border-radius);
+    background-color: var(--color-primary);
+    color: var(--color-surface);
+    cursor: pointer;
+    font: inherit;
+    font-weight: 600;
+}
+
+.paginacao button:hover:not(:disabled) {
+    background-color: var(--color-primary-hover);
+}
+
+.paginacao button:focus-visible {
+    outline: 3px solid var(--color-focus);
+    outline-offset: 2px;
+}
+
+.paginacao button:disabled {
+    background-color: var(--color-border);
+    color: var(--color-text);
+    cursor: not-allowed;
+}
+
+#informacao-pagina {
+    min-width: 110px;
+    text-align: center;
+    font-weight: 600;
+}
