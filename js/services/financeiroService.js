@@ -51,24 +51,6 @@ export function cadastrarTransacao(dados) {
     }
 }
 
-export function listarTransacoes() {
-    try {
-        const transacoes = carregarTransacoes();
-
-        return {
-            sucesso: true,
-            transacoes,
-            erros: []
-        }
-    } catch (error) {
-        return {
-            sucesso: false,
-            transacoes: [],
-            erros: [error.message]
-        }
-    }
-}
-
 export function excluirTransacao(id) {
     try {
         const transacaoRemovida = removerTransacaoRepository(id);
