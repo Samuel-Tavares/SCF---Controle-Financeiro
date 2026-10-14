@@ -1,6 +1,18 @@
 export function validarTransacao(transacao) {
     const erros = [];
 
+    if (!["receita", "despesa"].includes(transacao.tipo)) {
+        erros.push("Selecione um tipo de transação válido.");
+    }
+
+    if (!["fixa", "variavel"].includes(transacao.recorrencia)) {
+        erros.push("Selecione uma recorrência válida.");
+    }
+
+    if (!["essencial", "nao-essencial"].includes(transacao.essencialidade)) {
+        erros.push("Selecione uma essencialidade válida.");
+    }
+
     if (
         transacao.descricao === "" 
         || transacao.descricao === undefined
