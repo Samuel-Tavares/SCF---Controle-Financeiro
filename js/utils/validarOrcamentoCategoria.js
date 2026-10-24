@@ -1,4 +1,4 @@
-export function validarOrcamentoCategoria(orcamento) {
+export function validarOrcamentoCategoria(orcamento, categoria) {
     const erros = [];
 
     if (
@@ -7,6 +7,14 @@ export function validarOrcamentoCategoria(orcamento) {
         || orcamento.categoria === null
     ) {
         erros.push("A categoria é obrigatória");
+    } else if (categoria === null) {
+        erros.push("A categoria selecionada não existe.");
+    } else if (
+        categoria.tipoRelacionado !== "despesa"
+    ) {
+        erros.push(
+            "O orçamento deve utilizar uma categoria de despesa."
+        );
     }
 
     if (!Number.isFinite(orcamento.valorLimite)) {

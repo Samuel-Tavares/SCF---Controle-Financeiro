@@ -4,7 +4,8 @@ import {
     excluirTransacao,
     calcularResumo,
     filtrarTransacoes,
-    paginarTransacoes
+    paginarTransacoes,
+    listarCategorias
 } from "../services/financeiroService.js";
 
 import {
@@ -24,12 +25,42 @@ import {
     limparMensagem
 } from "../views/mensagemView.js";
 
+import {
+    renderizarCategoriasTransacao,
+    renderizarCategoriasFiltro
+} from "../views/categoriaView.js";
+
 let idTransacaoEmEdicao = null;
 let filtrosAtivos = {};
 let paginaAtual = 1;
+let categoriasDisponiveis = [];
 
 const ITENS_POR_PAGINA = 5;
 const SELETOR_MENSAGEM = "#mensagem-transacao";
+
+function atualizarCategoriasDoFormulario(
+    tipo,
+    categoriaSelecionada = ""
+) {
+    const categoriasRelacionadas = categoriasDisponiveis.filter(
+        (categoria) =>
+            categoria.tipoRelacionado === tipo
+    );
+
+    const textoInicial = tipo === ""
+        ? "Selecione primeiro o tipo"
+        : "Selecione";
+
+    renderizarCategoriasTransacao(
+        categoriasRelacionadas,
+        textoInicial
+    );
+
+    if (categoriaSelecionada !== "") {
+        document.querySelector("#categoria").value =
+            categoriaSelecionada;
+    }
+}
 
 function atualizarListaTransacoes() {
     const resultado = filtrarTransacoes(filtrosAtivos);
@@ -76,11 +107,16 @@ function tratarEdicaoTransacao(transacao) {
 
     document.querySelector("#cancelar-edicao-transacao").hidden = false;
     document.querySelector("#tipo").value = transacao.tipo;
+
+    atualizarCategoriasDoFormulario(
+        transacao.tipo,
+        transacao.categoria
+    );
+
     document.querySelector("#recorrencia").value = transacao.recorrencia;
     document.querySelector("#essencialidade").value = transacao.essencialidade;
     document.querySelector("#descricao").value = transacao.descricao;
     document.querySelector("#valor").value = transacao.valor;
-    document.querySelector("#categoria").value = transacao.categoria;
     document.querySelector("#data").value = transacao.data;
     document.querySelector("#observacao").value = transacao.observacao ?? "";
 
@@ -103,6 +139,7 @@ function restaurarModoCadastro() {
     const botaoCancelar = document.querySelector("#cancelar-edicao-transacao");
 
     formulario.reset();
+    atualizarCategoriasDoFormulario("");
     botaoEnviar.textContent = "Cadastrar transação";
     botaoCancelar.hidden = true;
 }
@@ -162,8 +199,33 @@ export function inicializarTransacaoController() {
     const botaoPaginaAnterior = document.querySelector("#pagina-anterior");
     const botaoProximaPagina = document.querySelector("#proxima-pagina");
 
+    const resultadoCategorias = listarCategorias();
+
+    if (!resultadoCategorias.sucesso) {
+        exibirMensagem(
+            SELETOR_MENSAGEM,
+            resultadoCategorias.erros
+        );
+
+        return;
+    }
+
+    categoriasDisponiveis = resultadoCategorias.categorias;
+
+    atualizarCategoriasDoFormulario("");
+
+    renderizarCategoriasFiltro(
+        categoriasDisponiveis
+    );
+
     atualizarListaTransacoes();
     atualizarResumoFinanceiro();
+
+    inputTipo.addEventListener("change", function() {
+        atualizarCategoriasDoFormulario(
+            inputTipo.value
+        );
+    });
 
     botaoPaginaAnterior.addEventListener("click", function () {
         paginaAtual -= 1;
@@ -212,7 +274,7 @@ export function inicializarTransacaoController() {
         limparMensagem(SELETOR_MENSAGEM);
 
         const estaEditando = idTransacaoEmEdicao !== null;
-        
+
         const transacao = {
             tipo: inputTipo.value,
             recorrencia: inputRecorrencia.value,
@@ -236,7 +298,7 @@ export function inicializarTransacaoController() {
 
             return;
         }
-        
+
         restaurarModoCadastro();
         paginaAtual = 1;
         atualizarListaTransacoes();

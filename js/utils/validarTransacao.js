@@ -1,4 +1,4 @@
-export function validarTransacao(transacao) {
+export function validarTransacao(transacao, categoria) {
     const erros = [];
 
     if (!["receita", "despesa"].includes(transacao.tipo)) {
@@ -14,7 +14,7 @@ export function validarTransacao(transacao) {
     }
 
     if (
-        transacao.descricao === "" 
+        transacao.descricao === ""
         || transacao.descricao === undefined
         || transacao.descricao === null
     ) {
@@ -22,11 +22,19 @@ export function validarTransacao(transacao) {
     }
 
     if (
-        transacao.categoria === "" 
+        transacao.categoria === ""
         || transacao.categoria === undefined
         || transacao.categoria === null
     ) {
-        erros.push('A categoria não deve ser vazia');
+        erros.push("A categoria não deve ser vazia.");
+    } else if (categoria === null) {
+        erros.push("A categoria selecionada não existe.");
+    } else if (
+        categoria.tipoRelacionado !== transacao.tipo
+    ) {
+        erros.push(
+            "A categoria selecionada não pertence ao tipo de transação."
+        );
     }
 
     if (!Number.isFinite(transacao.valor)) {

@@ -17,22 +17,129 @@ import {
     atualizarOrcamento as atualizarOrcamentoRepository
 } from "../repositories/orcamentoCategoriaRepository.js";
 
-export function cadastrarTransacao(dados) {
-    const erros = validarTransacao(dados);
+import Categoria from "../models/Categoria.js";
 
-    if (erros.length > 0) {
+import {
+    validarCategoria
+} from "../utils/validarCategoria.js";
+
+import {
+    carregarCategorias,
+    salvarCategoria,
+    atualizarCategoria as atualizarCategoriaRepository,
+    removerCategoria as removerCategoriaRepository,
+    buscarCategoriaPorId
+} from "../repositories/categoriaRepository.js";
+
+const CATEGORIAS_INICIAIS = [
+    {
+        id: "alimentacao",
+        nome: "Alimentação",
+        tipoRelacionado: "despesa"
+    },
+    {
+        id: "educacao",
+        nome: "Educação",
+        tipoRelacionado: "despesa"
+    },
+    {
+        id: "lazer",
+        nome: "Lazer",
+        tipoRelacionado: "despesa"
+    },
+    {
+        id: "moradia",
+        nome: "Moradia",
+        tipoRelacionado: "despesa"
+    },
+    {
+        id: "saude",
+        nome: "Saúde",
+        tipoRelacionado: "despesa"
+    },
+    {
+        id: "transporte",
+        nome: "Transporte",
+        tipoRelacionado: "despesa"
+    },
+    {
+        id: "salario",
+        nome: "Salário",
+        tipoRelacionado: "receita"
+    },
+    {
+        id: "investimentos",
+        nome: "Investimentos",
+        tipoRelacionado: "receita"
+    },
+    {
+        id: "outros-despesa",
+        nome: "Outros",
+        tipoRelacionado: "despesa"
+    },
+    {
+        id: "outros-receita",
+        nome: "Outros",
+        tipoRelacionado: "receita"
+    }
+];
+
+export function inicializarCategorias() {
+    try {
+        const categoriasExistentes = carregarCategorias();
+
+        if (categoriasExistentes.length > 0) {
+            return {
+                sucesso: true,
+                categorias: categoriasExistentes,
+                erros: []
+            };
+        }
+
+        const categoriasSalvas = CATEGORIAS_INICIAIS.map(
+            (dadosCategoria) => {
+                const categoria = new Categoria(
+                    dadosCategoria
+                );
+
+                return salvarCategoria(categoria);
+            }
+        );
+
+        return {
+            sucesso: true,
+            categorias: categoriasSalvas,
+            erros: []
+        };
+    } catch (error) {
         return {
             sucesso: false,
-            transacao: null,
-            erros
+            categorias: [],
+            erros: [error.message]
         };
     }
+}
 
+export function cadastrarTransacao(dados) {
     try {
+        const categoria = buscarCategoriaPorId(
+            dados.categoria
+        );
+
+        const erros = validarTransacao(dados, categoria);
+
+        if (erros.length > 0) {
+            return {
+                sucesso: false,
+                transacao: null,
+                erros
+            };
+        }
+
         const transacao = new Transacao({
             ...dados,
             id: crypto.randomUUID()
-        })
+        });
 
         const transacaoSalva = salvarTransacao(transacao);
 
@@ -41,7 +148,6 @@ export function cadastrarTransacao(dados) {
             transacao: transacaoSalva,
             erros: []
         };
-
     } catch (error) {
         return {
             sucesso: false,
@@ -70,17 +176,24 @@ export function excluirTransacao(id) {
 }
 
 export function editarTransacao(id, dados) {
-    const erros = validarTransacao(dados);
-
-    if (erros.length > 0) {
-        return {
-            sucesso: false,
-            transacao: null,
-            erros
-        };
-    }
-
     try {
+        const categoria = buscarCategoriaPorId(
+            dados.categoria
+        );
+
+        const erros = validarTransacao(
+            dados,
+            categoria
+        );
+
+        if (erros.length > 0) {
+            return {
+                sucesso: false,
+                transacao: null,
+                erros
+            };
+        }
+
         const transacaoAtualizada = new Transacao({
             ...dados,
             id
@@ -156,30 +269,40 @@ export function calcularResumo() {
 }
 
 export function cadastrarOrcamentoCategoria(dados) {
-    const erros = validarOrcamentoCategoria(dados);
-
-    if (erros.length > 0) {
-        return {
-            sucesso: false,
-            orcamento: null,
-            erros
-        };
-    }
-
     try {
+        const categoria = buscarCategoriaPorId(
+            dados.categoria
+        );
+
+        const erros = validarOrcamentoCategoria(
+            dados,
+            categoria
+        );
+
+        if (erros.length > 0) {
+            return {
+                sucesso: false,
+                orcamento: null,
+                erros
+            };
+        }
+
         const orcamentos = carregarOrcamentos();
 
         const orcamentoExistente = orcamentos.some(
             (orcamento) =>
                 orcamento.categoria === dados.categoria
-                && orcamento.mesReferencia === dados.mesReferencia
+            && orcamento.mesReferencia
+                === dados.mesReferencia
         );
 
         if (orcamentoExistente) {
             return {
                 sucesso: false,
                 orcamento: null,
-                erros: ["Já existe um orçamento para esta categoria e mês"]
+                erros: [
+                    "Já existe um orçamento para esta categoria e mês."
+                ]
             };
         }
 
@@ -188,7 +311,9 @@ export function cadastrarOrcamentoCategoria(dados) {
             id: crypto.randomUUID()
         });
 
-        const orcamentoSalvo = salvarOrcamento(orcamento);
+        const orcamentoSalvo = salvarOrcamento(
+            orcamento
+        );
 
         return {
             sucesso: true,
@@ -208,6 +333,7 @@ export function listarOrcamentosCategoria() {
     try {
         const orcamentos = carregarOrcamentos();
         const transacoes = carregarTransacoes();
+        const categorias = carregarCategorias();
 
         const orcamentosCalculados = orcamentos.map(
             (orcamento) => {
@@ -240,8 +366,16 @@ export function listarOrcamentosCategoria() {
                     gastoEmCentavos / limiteEmCentavos
                 ) * 100 : 0;
 
+                const categoriaRelacionada = categorias.find(
+                    (categoria) =>
+                        categoria.id === orcamento.categoria
+                );
+
                 return {
                     ...orcamento,
+                    categoriaNome:
+                        categoriaRelacionada?.nome
+                        ?? "Categoria não encontrada",
                     valorGasto,
                     valorRestante,
                     percentualUtilizado
@@ -282,31 +416,42 @@ export function excluirOrcamentoCategoria(id) {
 }
 
 export function editarOrcamentoCategoria(id, dados) {
-    const erros = validarOrcamentoCategoria(dados);
-
-    if (erros.length > 0) {
-        return {
-            sucesso: false,
-            orcamento: null,
-            erros
-        };
-    }
-
     try {
+        const categoria = buscarCategoriaPorId(
+            dados.categoria
+        );
+
+        const erros = validarOrcamentoCategoria(
+            dados,
+            categoria
+        );
+
+        if (erros.length > 0) {
+            return {
+                sucesso: false,
+                orcamento: null,
+                erros
+            };
+        }
+
         const orcamentos = carregarOrcamentos();
 
         const orcamentoDuplicado = orcamentos.some(
             (orcamento) =>
-                orcamento.id != id
-                && orcamento.categoria === dados.categoria
-                && orcamento.mesReferencia === dados.mesReferencia
+                orcamento.id !== id
+                && orcamento.categoria
+                    === dados.categoria
+                && orcamento.mesReferencia
+                    === dados.mesReferencia
         );
 
         if (orcamentoDuplicado) {
             return {
                 sucesso: false,
                 orcamento: null,
-                erros: ["Já existe um orçamento para esta categoria e mês."]
+                erros: [
+                    "Já existe um orçamento para esta categoria e mês."
+                ]
             };
         }
 
@@ -315,13 +460,15 @@ export function editarOrcamentoCategoria(id, dados) {
             id
         });
 
-        const orcamentoSalvo = atualizarOrcamentoRepository(orcamentoAtualizado);
+        const orcamentoSalvo = atualizarOrcamentoRepository(
+            orcamentoAtualizado
+        );
 
         return {
             sucesso: true,
             orcamento: orcamentoSalvo,
             erros: []
-        }
+        };
     } catch (error) {
         return {
             sucesso: false,
@@ -338,6 +485,7 @@ export function filtrarTransacoes({
 } = {}) {
     try {
         const transacoes = carregarTransacoes();
+        const categorias = carregarCategorias();
 
         const transacoesFiltradas = transacoes
             .filter((transacao) => {
@@ -355,7 +503,25 @@ export function filtrarTransacoes({
                     && correspondeACategoria
                     && correspondeAoMes);
             })
-            .sort((transacaoA, transacaoB) => transacaoB.data.localeCompare(transacaoA.data));
+            .sort(
+                (transacaoA, transacaoB) =>
+                    transacaoB.data.localeCompare(
+                        transacaoA.data
+                    )
+            )
+            .map((transacao) => {
+                const categoriaRelacionada = categorias.find(
+                    (categoria) =>
+                        categoria.id === transacao.categoria
+                );
+
+                return {
+                    ...transacao,
+                    categoriaNome:
+                        categoriaRelacionada?.nome
+                        ?? "Categoria não encontrada"
+                };
+            });
 
         return {
             sucesso: true,
@@ -402,4 +568,193 @@ export function paginarTransacoes(
         totalPaginas,
         totalItens
     };
+}
+
+export function listarCategorias() {
+    try {
+        const categorias = carregarCategorias();
+
+        return {
+            sucesso: true,
+            categorias,
+            erros: []
+        };
+    } catch (error) {
+        return {
+            sucesso: false,
+            categorias: [],
+            erros: [error.message]
+        };
+    }
+}
+
+export function cadastrarCategoria(dados) {
+    const dadosNormalizados = {
+        ...dados,
+        nome: typeof dados.nome === "string"
+        ? dados.nome.trim()
+        : ""
+    };
+
+    const erros = validarCategoria(dadosNormalizados);
+
+    if (erros.length > 0) {
+        return {
+            sucesso: false,
+            categoria: null,
+            erros
+        };
+    }
+
+    try {
+        const categorias = carregarCategorias();
+
+        const categoriaDuplicada = categorias.some(
+            (categoria) =>
+                categoria.nome.toLowerCase()
+                    === dadosNormalizados.nome.toLowerCase()
+                && categoria.tipoRelacionado
+                    === dadosNormalizados.tipoRelacionado
+        );
+
+        if (categoriaDuplicada) {
+            return {
+                sucesso: false,
+                categoria: null,
+                erros: [
+                    "Já existe uma categoria com este nome e tipo."
+                ]
+            };
+        }
+
+        const categoria = new Categoria({
+            ...dadosNormalizados,
+            id: crypto.randomUUID()
+        });
+
+        const categoriaSalva = salvarCategoria(categoria);
+
+        return {
+            sucesso: true,
+            categoria: categoriaSalva,
+            erros: []
+        };
+    } catch (error) {
+        return {
+            sucesso: false,
+            categoria: null,
+            erros: [error.message]
+        };
+    }
+
+}
+
+export function editarCategoria(id, dados) {
+    const dadosNormalizados = {
+        ...dados,
+        nome: typeof dados.nome === "string"
+            ? dados.nome.trim()
+            : ""
+    };
+
+    const erros = validarCategoria(dadosNormalizados);
+
+    if (erros.length > 0) {
+        return {
+            sucesso: false,
+            categoria: null,
+            erros
+        };
+    }
+
+    try {
+        const categorias = carregarCategorias();
+
+        const categoriaDuplicada = categorias.some(
+            (categoria) =>
+                categoria.id !== id
+                && categoria.nome.toLowerCase()
+                    === dadosNormalizados.nome.toLowerCase()
+                && categoria.tipoRelacionado
+                    === dadosNormalizados.tipoRelacionado
+        );
+
+        if (categoriaDuplicada) {
+            return {
+                sucesso: false,
+                categoria: null,
+                erros: [
+                    "Já existe uma categoria com este nome e tipo."
+                ]
+            };
+        }
+
+        const categoriaAtualizada = new Categoria({
+            ...dadosNormalizados,
+            id
+        });
+
+        const categoriaSalva = atualizarCategoriaRepository(categoriaAtualizada);
+
+        return {
+            sucesso: true,
+            categoria: categoriaSalva,
+            erros: []
+        };
+    } catch (error) {
+        return {
+            sucesso: false,
+            categoria: null,
+            erros: [error.message]
+        };
+    }
+}
+
+export function excluirCategoria(id) {
+    try {
+        const categoria = buscarCategoriaPorId(id);
+
+        if (categoria === null) {
+            return {
+                sucesso: false,
+                categoria: null,
+                erros: ["Categoria não encontrada."]
+            };
+        }
+
+        const transacoes = carregarTransacoes();
+        const orcamentos = carregarOrcamentos();
+
+        const categoriaEstaEmUso =
+            transacoes.some(
+                (transacao) => transacao.categoria === id
+            )
+            || orcamentos.some(
+                (orcamento) => orcamento.categoria === id
+            );
+
+        if (categoriaEstaEmUso) {
+            return {
+                sucesso: false,
+                categoria: null,
+                erros: [
+                    "Não é possível excluir uma categoria que está em uso."
+                ]
+            };
+        }
+
+        const categoriaRemovida = removerCategoriaRepository(id);
+
+        return {
+            sucesso: true,
+            categoria: categoriaRemovida,
+            erros: []
+        };
+    } catch (error) {
+        return {
+            sucesso: false,
+            categoria: null,
+            erros: [error.message]
+        };
+    }
 }

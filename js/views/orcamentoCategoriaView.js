@@ -87,7 +87,7 @@ export function renderizarOrcamentosCategoria(orcamentos, aoEditar, aoExcluir) {
         );
 
         linha.append(
-            criarCelula(orcamento.categoria),
+            criarCelula(orcamento.categoriaNome),
             criarCelula(formatarMesReferencia(orcamento.mesReferencia)),
             criarCelula(formatarMoeda(orcamento.valorLimite)),
             criarCelula(formatarMoeda(orcamento.valorGasto)),
@@ -95,7 +95,7 @@ export function renderizarOrcamentosCategoria(orcamentos, aoEditar, aoExcluir) {
             criarCelula(formatarPorcentagem(orcamento.percentualUtilizado)),
             celulaAcoes
         );
-        
+
         corpoTabela.append(linha);
     });
 }

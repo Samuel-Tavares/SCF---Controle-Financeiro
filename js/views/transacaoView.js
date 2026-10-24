@@ -72,7 +72,7 @@ export function renderizarTransacoes(
 
         linha.append(
             criarCelula(transacao.descricao),
-            criarCelula(transacao.categoria),
+            criarCelula(transacao.categoriaNome),
             criarCelula(formatarData(transacao.data)),
             criarCelula(transacao.tipo),
             criarCelula(formatarMoeda(transacao.valor)),

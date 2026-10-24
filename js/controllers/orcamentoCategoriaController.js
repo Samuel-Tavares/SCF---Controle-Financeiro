@@ -2,7 +2,8 @@ import {
     cadastrarOrcamentoCategoria,
     listarOrcamentosCategoria,
     editarOrcamentoCategoria,
-    excluirOrcamentoCategoria
+    excluirOrcamentoCategoria,
+    listarCategorias
 } from "../services/financeiroService.js";
 
 import {
@@ -14,6 +15,10 @@ import {
     exibirMensagem,
     limparMensagem
 } from "../views/mensagemView.js";
+
+import {
+    renderizarCategoriasOrcamento
+} from "../views/categoriaView.js";
 
 let idOrcamentoEmEdicao = null;
 const SELETOR_MENSAGEM = "#mensagem-orcamento";
@@ -94,6 +99,22 @@ export function inicializarOrcamentoCategoriaController() {
     );
 
     const botaoCancelar = document.querySelector("#cancelar-edicao-orcamento");
+
+    const resultadoCategorias = listarCategorias();
+
+    if (!resultadoCategorias.sucesso) {
+        exibirMensagem(
+            SELETOR_MENSAGEM,
+            resultadoCategorias.erros
+        );
+
+        return;
+    }
+
+    const categoriasDeDespesa = resultadoCategorias.categorias
+        .filter((categoria) => categoria.tipoRelacionado === "despesa");
+
+    renderizarCategoriasOrcamento(categoriasDeDespesa);
 
     atualizarListaOrcamentosCategoria();
 
