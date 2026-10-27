@@ -39,7 +39,9 @@ import {
 
 import {
     carregarOrcamentosMensais,
-    salvarOrcamentoMensal
+    salvarOrcamentoMensal,
+    atualizarOrcamentoMensal as atualizarOrcamentoMensalRepository,
+    removerOrcamentoMensal as removerOrcamentoMensalRepository
 } from "../repositories/orcamentoMensalRepository.js";
 
 const CATEGORIAS_INICIAIS = [
@@ -871,6 +873,76 @@ export function listarOrcamentosMensais() {
         return {
             sucesso: false,
             orcamentos: [],
+            erros: [error.message]
+        };
+    }
+}
+
+export function editarOrcamentoMensal(id, dados) {
+    const erros = validarOrcamentoMensal(dados);
+
+    if (erros.length > 0) {
+        return {
+            sucesso: false,
+            orcamento: null,
+            erros
+        };
+    }
+
+    try {
+        const orcamentos = carregarOrcamentosMensais();
+
+        const orcamentoDuplicado = orcamentos.some(
+            (orcamento) =>
+                orcamento.id !== id
+                && orcamento.mes === dados.mes
+        );
+
+        if (orcamentoDuplicado) {
+            return {
+                sucesso: false,
+                orcamento: null,
+                erros: [
+                    "Já existe um orçamento mensal para este mês."
+                ]
+            };
+        }
+
+        const orcamentoAtualizado = new OrcamentoMensal({
+            id,
+            mes: dados.mes,
+            valorLimite: dados.valorLimite
+        });
+
+        const orcamentoSalvo = atualizarOrcamentoMensalRepository(orcamentoAtualizado);
+
+        return {
+            sucesso: true,
+            orcamento: orcamentoSalvo,
+            erros: []
+        };
+    } catch (error) {
+        return {
+            sucesso: false,
+            orcamento: null,
+            erros: [error.message]
+        };
+    }
+}
+
+export function excluirOrcamentoMensal(id) {
+    try {
+        const orcamentoRemovido = removerOrcamentoMensalRepository(id);
+
+        return {
+            sucesso: true,
+            orcamento: orcamentoRemovido,
+            erros: []
+        };
+    } catch (error) {
+        return {
+            sucesso: false,
+            orcamento: null,
             erros: [error.message]
         };
     }
