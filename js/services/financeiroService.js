@@ -817,3 +817,61 @@ export function cadastrarOrcamentoMensal(dados) {
         };
     }
 }
+
+export function listarOrcamentosMensais() {
+    try {
+        const orcamento = carregarOrcamentosMensais();
+
+        const transacoes = carregarTransacoes();
+
+        const orcamentosCalculados = orcamento.map(
+            (orcamento) => {
+                const despesasDoMes = transacoes.filter(
+                    (transacao) =>
+                        transacao.tipo === "despesa"
+                        && transacao.data.startsWith(
+                            orcamento.mes
+                        )
+                );
+
+                const valorUtilizadoEmCentavos =
+                    despesasDoMes.reduce(
+                        (total, transacao) =>
+                            total
+                            + Math.round(
+                                transacao.valor * 100
+                            ),
+                        0
+                    );
+
+                const limiteEmCentavos = Math.round(
+                    orcamento.valorLimite * 100
+                );
+
+                const valorUtilizado = valorUtilizadoEmCentavos / 100;
+
+                const percentualAtingido = limiteEmCentavos > 0 ? (
+                    valorUtilizadoEmCentavos / limiteEmCentavos
+                ) * 100 : 0;
+
+                return new OrcamentoMensal({
+                    ...orcamento,
+                    valorUtilizado,
+                    percentualAtingido
+                });
+            }
+        );
+
+        return {
+            sucesso: true,
+            orcamentos: orcamentosCalculados,
+            erros: []
+        };
+    } catch (error) {
+        return {
+            sucesso: false,
+            orcamentos: [],
+            erros: [error.message]
+        };
+    }
+}
