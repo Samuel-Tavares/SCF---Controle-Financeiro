@@ -31,6 +31,17 @@ import {
     buscarCategoriaPorId
 } from "../repositories/categoriaRepository.js";
 
+import OrcamentoMensal from "../models/OrcamentoMensal.js";
+
+import {
+    validarOrcamentoMensal
+} from "../utils/validarOrcamentoMensal.js";
+
+import {
+    carregarOrcamentosMensais,
+    salvarOrcamentoMensal
+} from "../repositories/orcamentoMensalRepository.js";
+
 const CATEGORIAS_INICIAIS = [
     {
         id: "alimentacao",
@@ -754,6 +765,54 @@ export function excluirCategoria(id) {
         return {
             sucesso: false,
             categoria: null,
+            erros: [error.message]
+        };
+    }
+}
+
+export function cadastrarOrcamentoMensal(dados) {
+    const erros = validarOrcamentoMensal(dados);
+
+    if (erros.length > 0) {
+        return {
+            sucesso: false,
+            orcamento: null,
+            erros
+        };
+    }
+
+    try {
+        const orcamentos = carregarOrcamentosMensais();
+
+        const orcamentoExistente = orcamentos.some(
+            (orcamento) => orcamento.mes === dados.mes
+        );
+
+        if (orcamentoExistente) {
+            return {
+                sucesso: false,
+                orcamento: null,
+                erros: ["Já existe um orçamento mensal para este mês."]
+            };
+        }
+
+        const orcamento = new OrcamentoMensal({
+            id: crypto.randomUUID(),
+            mes: dados.mes,
+            valorLimite: dados.valorLimite
+        });
+
+        const orcamentoSalvo = salvarOrcamentoMensal(orcamento);
+
+        return {
+            sucesso: true,
+            orcamento: orcamentoSalvo,
+            erros: []
+        };
+    } catch (error) {
+        return {
+            sucesso: false,
+            orcamento: null,
             erros: [error.message]
         };
     }
