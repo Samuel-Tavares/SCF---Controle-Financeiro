@@ -1,6 +1,7 @@
 import { inicializarTransacaoController } from "./controllers/transacaoController.js";
 import { inicializarOrcamentoCategoriaController } from "./controllers/orcamentoCategoriaController.js";
 import { inicializarCategorias } from "./services/financeiroService.js";
+import { inicializarOrcamentoMensalController } from "./controllers/orcamentoMensalController.js";
 
 const resultadoCategorias = inicializarCategorias();
 
@@ -10,3 +11,4 @@ if (!resultadoCategorias.sucesso) {
 
 inicializarTransacaoController();
 inicializarOrcamentoCategoriaController();
+inicializarOrcamentoMensalController();
