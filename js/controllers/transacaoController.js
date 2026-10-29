@@ -21,6 +21,10 @@ import {
 } from "../controllers/orcamentoCategoriaController.js"
 
 import {
+    atualizarListaOrcamentosMensais
+} from "./orcamentoMensalController.js";
+
+import {
     exibirMensagem,
     limparMensagem
 } from "../views/mensagemView.js";
@@ -171,6 +175,7 @@ function tratarExclusaoTransacao(id) {
     atualizarListaTransacoes();
     atualizarResumoFinanceiro();
     atualizarListaOrcamentosCategoria();
+    atualizarListaOrcamentosMensais();
 
     exibirMensagem(
         SELETOR_MENSAGEM,
@@ -304,6 +309,7 @@ export function inicializarTransacaoController() {
         atualizarListaTransacoes();
         atualizarResumoFinanceiro();
         atualizarListaOrcamentosCategoria();
+        atualizarListaOrcamentosMensais();
 
         const mensagemSucesso = estaEditando
             ? "Transação atualizada com sucesso."
