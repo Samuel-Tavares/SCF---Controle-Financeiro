@@ -371,13 +371,13 @@ export function listarOrcamentosCategoria() {
                     0
                 );
 
-                const valorGasto = gastoEmCentavos / 100;
+                const valorUtilizado = gastoEmCentavos / 100;
 
                 const valorRestante = (limiteEmCentavos - gastoEmCentavos) / 100;
 
-                const percentualUtilizado = limiteEmCentavos > 0 ? (
-                    gastoEmCentavos / limiteEmCentavos
-                ) * 100 : 0;
+                const percentualAtingido = limiteEmCentavos > 0
+                ? (gastoEmCentavos / limiteEmCentavos) * 100
+                : 0;
 
                 const categoriaRelacionada = categorias.find(
                     (categoria) =>
@@ -389,9 +389,9 @@ export function listarOrcamentosCategoria() {
                     categoriaNome:
                         categoriaRelacionada?.nome
                         ?? "Categoria não encontrada",
-                    valorGasto,
+                    valorUtilizado,
                     valorRestante,
-                    percentualUtilizado
+                    percentualAtingido
                 };
             }
         );

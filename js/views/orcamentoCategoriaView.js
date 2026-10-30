@@ -75,9 +75,9 @@ export function renderizarOrcamentosCategoria(orcamentos, aoEditar, aoExcluir) {
 
         linha.dataset.id = orcamento.id;
 
-        if (orcamento.percentualUtilizado >= 100) {
+        if (orcamento.percentualAtingido >= 100) {
             linha.classList.add("orcamento-excedido");
-        } else if (orcamento.percentualUtilizado >= 80) {
+        } else if (orcamento.percentualAtingido >= 80) {
             linha.classList.add("orcamento-alerta");
         }
 
@@ -90,9 +90,9 @@ export function renderizarOrcamentosCategoria(orcamentos, aoEditar, aoExcluir) {
             criarCelula(orcamento.categoriaNome),
             criarCelula(formatarMesReferencia(orcamento.mesReferencia)),
             criarCelula(formatarMoeda(orcamento.valorLimite)),
-            criarCelula(formatarMoeda(orcamento.valorGasto)),
+            criarCelula(formatarMoeda(orcamento.valorUtilizado)),
             criarCelula(formatarMoeda(orcamento.valorRestante)),
-            criarCelula(formatarPorcentagem(orcamento.percentualUtilizado)),
+            criarCelula(formatarPorcentagem(orcamento.percentualAtingido)),
             celulaAcoes
         );
 
