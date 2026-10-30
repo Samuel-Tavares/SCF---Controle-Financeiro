@@ -249,7 +249,7 @@ section h2 {
 
 #form-novo-orcamento {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--spacing-md);
     align-items: end;
 }
@@ -283,7 +283,7 @@ section h2 {
 
 #tabela-orcamentos-container table {
     width: 100%;
-    min-width: 760px;
+    min-width: 640px;
     border-collapse: collapse;
 }
 
@@ -298,8 +298,8 @@ section h2 {
     background-color: var(--color-background);
 }
 
-#tabela-orcamentos-container th:nth-child(n + 3),
-#tabela-orcamentos-container td:nth-child(n + 3) {
+#tabela-orcamentos-container th:nth-child(n + 2),
+#tabela-orcamentos-container td:nth-child(n + 2) {
     text-align: right;
 }
 
@@ -313,7 +313,7 @@ section h2 {
     background-color: #fffbeb;
 }
 
-#tabela-orcamentos-container .orcamento-alerta td:last-child {
+#tabela-orcamentos-container .orcamento-alerta td:nth-child(4) {
     color: #b45309;
     font-weight: 700;
 }
@@ -322,8 +322,8 @@ section h2 {
     background-color: #fef2f2;
 }
 
-#tabela-orcamentos-container .orcamento-excedido td:nth-child(5),
-#tabela-orcamentos-container .orcamento-excedido td:last-child {
+#tabela-orcamentos-container .orcamento-excedido td:nth-child(3),
+#tabela-orcamentos-container .orcamento-excedido td:nth-child(4) {
     color: var(--color-danger);
     font-weight: 700;
 }

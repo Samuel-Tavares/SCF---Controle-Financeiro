@@ -305,8 +305,6 @@ export function cadastrarOrcamentoCategoria(dados) {
         const orcamentoExistente = orcamentos.some(
             (orcamento) =>
                 orcamento.categoria === dados.categoria
-            && orcamento.mesReferencia
-                === dados.mesReferencia
         );
 
         if (orcamentoExistente) {
@@ -314,7 +312,7 @@ export function cadastrarOrcamentoCategoria(dados) {
                 sucesso: false,
                 orcamento: null,
                 erros: [
-                    "Já existe um orçamento para esta categoria e mês."
+                    "Já existe um orçamento para esta categoria."
                 ]
             };
         }
@@ -358,9 +356,7 @@ export function listarOrcamentosCategoria() {
                     (total, transacao) => {
                         const pertenceAoOrcamento =
                         transacao.tipo === "despesa"
-                        && transacao.categoria
-                            === orcamento.categoria
-                        && transacao.data.startsWith(orcamento.mesReferencia);
+                        && transacao.categoria === orcamento.categoria;
 
                     if (!pertenceAoOrcamento) {
                         return total;
@@ -372,8 +368,6 @@ export function listarOrcamentosCategoria() {
                 );
 
                 const valorUtilizado = gastoEmCentavos / 100;
-
-                const valorRestante = (limiteEmCentavos - gastoEmCentavos) / 100;
 
                 const percentualAtingido = limiteEmCentavos > 0
                 ? (gastoEmCentavos / limiteEmCentavos) * 100
@@ -390,7 +384,6 @@ export function listarOrcamentosCategoria() {
                         categoriaRelacionada?.nome
                         ?? "Categoria não encontrada",
                     valorUtilizado,
-                    valorRestante,
                     percentualAtingido
                 };
             }
@@ -452,10 +445,7 @@ export function editarOrcamentoCategoria(id, dados) {
         const orcamentoDuplicado = orcamentos.some(
             (orcamento) =>
                 orcamento.id !== id
-                && orcamento.categoria
-                    === dados.categoria
-                && orcamento.mesReferencia
-                    === dados.mesReferencia
+                && orcamento.categoria === dados.categoria
         );
 
         if (orcamentoDuplicado) {
@@ -463,7 +453,7 @@ export function editarOrcamentoCategoria(id, dados) {
                 sucesso: false,
                 orcamento: null,
                 erros: [
-                    "Já existe um orçamento para esta categoria e mês."
+                    "Já existe um orçamento para esta categoria."
                 ]
             };
         }

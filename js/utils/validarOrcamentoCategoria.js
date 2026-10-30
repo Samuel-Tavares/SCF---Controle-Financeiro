@@ -23,11 +23,5 @@ export function validarOrcamentoCategoria(orcamento, categoria) {
         erros.push("O limite deve ser maior que zero.");
     }
 
-    const formatoMesValido = /^\d{4}-(0[1-9]|1[0-2])$/;
-
-    if (!formatoMesValido.test(orcamento.mesReferencia)) {
-        erros.push("O mês de referência deve estar no formato YYYY-MM");
-    }
-
     return erros;
 }

@@ -94,10 +94,6 @@ export function inicializarOrcamentoCategoriaController() {
         "#orcamento-valor-limite"
     );
 
-    const inputMesReferencia = document.querySelector(
-        "#orcamento-mes-referencia"
-    );
-
     const botaoCancelar = document.querySelector("#cancelar-edicao-orcamento");
 
     const resultadoCategorias = listarCategorias();
@@ -132,8 +128,7 @@ export function inicializarOrcamentoCategoriaController() {
 
         const orcamento = {
             categoria: inputCategoria.value,
-            valorLimite: Number(inputValorLimite.value),
-            mesReferencia: inputMesReferencia.value
+            valorLimite: Number(inputValorLimite.value)
         };
 
         const resultado = estaEditando
@@ -171,7 +166,6 @@ function tratarEdicaoOrcamento(orcamento) {
 
     document.querySelector("#orcamento-categoria").value = orcamento.categoria;
     document.querySelector("#orcamento-valor-limite").value = orcamento.valorLimite;
-    document.querySelector("#orcamento-mes-referencia").value = orcamento.mesReferencia;
     document.querySelector("#cancelar-edicao-orcamento").hidden = false;
 
     const botaoEnviar = document.querySelector(
