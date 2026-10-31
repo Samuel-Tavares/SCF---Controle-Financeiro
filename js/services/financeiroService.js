@@ -489,6 +489,13 @@ export function pesquisarPorDescricao(transacoes, descricao = "") {
     );
 }
 
+export function ordenar(transacoes) {
+    return [...transacoes].sort(
+        (transacaoA, transacaoB) =>
+            transacaoB.data.localeCompare(transacaoA.data)
+    );
+}
+
 export function filtrarTransacoes({
     tipo = "",
     categoria = "",
@@ -518,12 +525,6 @@ export function filtrarTransacoes({
                     && correspondeACategoria
                     && correspondeAoMes);
             })
-            .sort(
-                (transacaoA, transacaoB) =>
-                    transacaoB.data.localeCompare(
-                        transacaoA.data
-                    )
-            )
             .map((transacao) => {
                 const categoriaRelacionada = categorias.find(
                     (categoria) =>
@@ -540,7 +541,7 @@ export function filtrarTransacoes({
 
         return {
             sucesso: true,
-            transacoes: transacoesFiltradas,
+            transacoes: ordenar(transacoesFiltradas),
             erros: []
         };
     } catch (error) {
