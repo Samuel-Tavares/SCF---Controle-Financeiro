@@ -350,6 +350,22 @@ export function cadastrarOrcamentoCategoria(dados) {
     }
 }
 
+export function calcularOrcamentos(valorLimite, despesas) {
+    const limiteEmCentavos = Math.round(valorLimite * 100);
+
+    const utilizadoEmCentavos = despesas.reduce(
+        (total, despesa) =>
+            total + Math.round(despesa.valor * 100), 0
+    );
+
+    return {
+        valorUtilizado: utilizadoEmCentavos / 100,
+        percentualAtingido: limiteEmCentavos > 0
+            ? (utilizadoEmCentavos / limiteEmCentavos) * 100
+            : 0
+    };
+}
+
 export function listarOrcamentosCategoria() {
     try {
         const orcamentos = carregarOrcamentos();
@@ -358,30 +374,17 @@ export function listarOrcamentosCategoria() {
 
         const orcamentosCalculados = orcamentos.map(
             (orcamento) => {
-                const limiteEmCentavos = Math.round(
-                    orcamento.valorLimite * 100
-                );
-
-                const gastoEmCentavos = transacoes.reduce(
-                    (total, transacao) => {
-                        const pertenceAoOrcamento =
+                const despesasDaCategoria = transacoes.filter(
+                    (transacao) =>
                         transacao.tipo === "despesa"
-                        && transacao.categoria === orcamento.categoria;
-
-                    if (!pertenceAoOrcamento) {
-                        return total;
-                    }
-
-                    return total+Math.round(transacao.valor * 100);
-                    },
-                    0
+                        && transacao.categoria === orcamento.categoria
                 );
 
-                const valorUtilizado = gastoEmCentavos / 100;
-
-                const percentualAtingido = limiteEmCentavos > 0
-                ? (gastoEmCentavos / limiteEmCentavos) * 100
-                : 0;
+                const { valorUtilizado, percentualAtingido } =
+                    calcularOrcamentos(
+                        orcamento.valorLimite,
+                        despesasDaCategoria
+                    );
 
                 const categoriaRelacionada = categorias.find(
                     (categoria) =>
@@ -849,25 +852,11 @@ export function listarOrcamentosMensais() {
                         )
                 );
 
-                const valorUtilizadoEmCentavos =
-                    despesasDoMes.reduce(
-                        (total, transacao) =>
-                            total
-                            + Math.round(
-                                transacao.valor * 100
-                            ),
-                        0
+                const { valorUtilizado, percentualAtingido } =
+                    calcularOrcamentos(
+                        orcamento.valorLimite,
+                        despesasDoMes
                     );
-
-                const limiteEmCentavos = Math.round(
-                    orcamento.valorLimite * 100
-                );
-
-                const valorUtilizado = valorUtilizadoEmCentavos / 100;
-
-                const percentualAtingido = limiteEmCentavos > 0 ? (
-                    valorUtilizadoEmCentavos / limiteEmCentavos
-                ) * 100 : 0;
 
                 return new OrcamentoMensal({
                     ...orcamento,
