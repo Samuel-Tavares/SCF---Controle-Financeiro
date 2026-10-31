@@ -230,6 +230,13 @@ export function editarTransacao(id, dados) {
     }
 }
 
+export function calcularSaldo(
+    receitasEmCentavos,
+    despesasEmCentavos
+) {
+    return (receitasEmCentavos - despesasEmCentavos) / 100;
+}
+
 export function calcularResumo() {
     try {
         const transacoes = carregarTransacoes();
@@ -254,7 +261,10 @@ export function calcularResumo() {
         const totalReceitas = receitasEmCentavos / 100;
         const totalDespesas = despesasEmCentavos / 100;
 
-        const saldo = (receitasEmCentavos - despesasEmCentavos) / 100;
+        const saldo = calcularSaldo(
+            receitasEmCentavos,
+            despesasEmCentavos
+        );
 
         const taxaEconomia = receitasEmCentavos > 0 ? (
             (receitasEmCentavos - despesasEmCentavos) / receitasEmCentavos) * 100
