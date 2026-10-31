@@ -481,13 +481,25 @@ export function editarOrcamentoCategoria(id, dados) {
     }
 }
 
+export function pesquisarPorDescricao(transacoes, descricao = "") {
+    const termo = descricao.trim().toLowerCase();
+
+    return transacoes.filter((transacao) =>
+        transacao.descricao.toLowerCase().includes(termo)
+    );
+}
+
 export function filtrarTransacoes({
     tipo = "",
     categoria = "",
-    mesReferencia = ""
+    mesReferencia = "",
+    descricao = ""
 } = {}) {
     try {
-        const transacoes = carregarTransacoes();
+        const transacoes = pesquisarPorDescricao(
+            carregarTransacoes(),
+            descricao
+        );
         const categorias = carregarCategorias();
 
         const transacoesFiltradas = transacoes

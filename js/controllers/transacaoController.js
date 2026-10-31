@@ -200,6 +200,7 @@ export function inicializarTransacaoController() {
     const filtroTipo = document.querySelector("#filtro-tipo");
     const filtroCategoria = document.querySelector("#filtro-categoria");
     const filtroMes = document.querySelector("#filtro-mes");
+    const filtroDescricao = document.querySelector("#filtro-descricao");
     const botaoLimparFiltros = document.querySelector("#limpar-filtros-transacoes");
     const botaoPaginaAnterior = document.querySelector("#pagina-anterior");
     const botaoProximaPagina = document.querySelector("#proxima-pagina");
@@ -255,7 +256,8 @@ export function inicializarTransacaoController() {
             filtrosAtivos = {
                 tipo: filtroTipo.value,
                 categoria: filtroCategoria.value,
-                mesReferencia: filtroMes.value
+                mesReferencia: filtroMes.value,
+                descricao: filtroDescricao.value
             };
 
             paginaAtual = 1;
