@@ -7,13 +7,77 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <header>
-        <h1>Sistema de Controle Financeiro</h1>
-    </header>
+    <div class="app-shell">
+        <aside class="sidebar" aria-label="Navegação principal">
+            <a class="brand" href="#resumo-financeiro" aria-label="SCF — Visão geral">
+                <span class="brand-symbol" aria-hidden="true">S<span>·</span></span>
+                <span class="brand-name">SCF <small>Controle financeiro</small></span>
+            </a>
 
-    <main>
+            <div class="sidebar-group">
+                <p class="sidebar-caption">Seu espaço</p>
+                <nav class="sidebar-nav" aria-label="Seções da página">
+                    <a href="#resumo-financeiro"><span>01</span> Visão geral</a>
+                    <a href="#nova-transacao"><span>02</span> Nova transação</a>
+                    <a href="#orcamentos-mensais"><span>03</span> Orçamento mensal</a>
+                    <a href="#orcamentos-categoria"><span>04</span> Por categoria</a>
+                    <a href="#historico-transacoes"><span>05</span> Histórico</a>
+                </nav>
+            </div>
+
+            <p class="sidebar-note"><span aria-hidden="true"></span> Dados neste navegador</p>
+        </aside>
+
+        <div class="workspace">
+            <header class="workspace-header">
+                <span class="header-path">SCF <span aria-hidden="true">/</span> Painel</span>
+                <a class="header-link" href="#nova-transacao">+ Adicionar transação</a>
+            </header>
+
+            <main id="conteudo-principal">
+                <div class="page-intro">
+                    <p class="eyebrow">Clareza para decidir</p>
+                    <h1>Seu dinheiro, em perspectiva<span>.</span></h1>
+                    <p>Acompanhe seus movimentos, organize limites e veja o que importa em um só lugar.</p>
+                </div>
+
+        <section id="resumo-financeiro">
+            <div class="section-heading">
+                <div>
+                    <p class="section-kicker">01 / Panorama</p>
+                    <h2>Visão geral</h2>
+                </div>
+                <p>Indicadores de todas as transações cadastradas.</p>
+            </div>
+
+            <div class="resumo-cards">
+                <article class="resumo-card">
+                    <h3>Total de receitas</h3>
+                    <p id="total-receitas">R$ 0,00</p>
+                </article>
+                <article class="resumo-card">
+                    <h3>Total de despesas</h3>
+                    <p id="total-despesas">R$ 0,00</p>
+                </article>
+                <article class="resumo-card">
+                    <h3>Saldo</h3>
+                    <p id="saldo">R$ 0,00</p>
+                </article>
+                <article class="resumo-card">
+                    <h3>Taxa de economia</h3>
+                    <p id="taxa-economia">0,00%</p>
+                </article>
+            </div>
+        </section>
+
         <section id="nova-transacao">
-            <h2>Nova transação</h2>
+            <div class="section-heading">
+                <div>
+                    <p class="section-kicker">02 / Movimento</p>
+                    <h2>Nova transação</h2>
+                </div>
+                <p>Registre entradas e saídas com os detalhes certos.</p>
+            </div>
 
             <form id="form-nova-transacao">
                 <div class="form-group">
@@ -93,34 +157,14 @@
             </form>
         </section>
 
-        <section id="resumo-financeiro">
-            <h2>Resumo financeiro</h2>
-
-            <div class="resumo-cards">
-                <article class="resumo-card">
-                    <h3>Total de receitas</h3>
-                    <p id="total-receitas">R$ 0,00</p>
-                </article>
-
-                <article class="resumo-card">
-                    <h3>Total de despesas</h3>
-                    <p id="total-despesas">R$ 0,00</p>
-                </article>
-
-                <article class="resumo-card">
-                    <h3>Saldo</h3>
-                    <p id="saldo">R$ 0,00</p>
-                </article>
-
-                <article class="resumo-card">
-                    <h3>Taxa de economia</h3>
-                    <p id="taxa-economia">0,00%</p>
-                </article>
-            </div>
-        </section>
-
         <section id="orcamentos-mensais">
-            <h2>Orçamento mensal</h2>
+            <div class="section-heading">
+                <div>
+                    <p class="section-kicker">03 / Planejamento</p>
+                    <h2>Orçamento mensal</h2>
+                </div>
+                <p>Compare seu limite com as despesas de cada mês.</p>
+            </div>
 
             <form id="form-orcamento-mensal">
                 <div class="form-group">
@@ -193,7 +237,13 @@
         </section>
 
         <section id="orcamentos-categoria">
-            <h2>Orçamento por categoria</h2>
+            <div class="section-heading">
+                <div>
+                    <p class="section-kicker">04 / Prioridades</p>
+                    <h2>Por categoria</h2>
+                </div>
+                <p>Veja quanto cada categoria já utilizou do seu limite.</p>
+            </div>
 
             <form id="form-novo-orcamento">
                 <div class="form-group">
@@ -263,7 +313,13 @@
         </section>
 
         <section id="historico-transacoes">
-            <h2>Histórico de transações</h2>
+            <div class="section-heading">
+                <div>
+                    <p class="section-kicker">05 / Registro</p>
+                    <h2>Histórico de transações</h2>
+                </div>
+                <p>Encontre, revise e acompanhe seus lançamentos.</p>
+            </div>
 
             <form id="form-filtros-transacoes">
                 <div class="form-group">
@@ -358,7 +414,9 @@
                 </button>
             </nav>
         </section>
-    </main>
+            </main>
+        </div>
+    </div>
 
     <script type="module" src="js/main.js"></script>
 </body>
