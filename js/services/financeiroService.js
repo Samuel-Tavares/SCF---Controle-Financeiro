@@ -44,6 +44,8 @@ import {
     removerOrcamentoMensal as removerOrcamentoMensalRepository
 } from "../repositories/orcamentoMensalRepository.js";
 
+import { tratarErros } from "../utils/tratarErros.js";
+
 const CATEGORIAS_INICIAIS = [
     {
         id: "alimentacao",
@@ -128,7 +130,7 @@ export function inicializarCategorias() {
         return {
             sucesso: false,
             categorias: [],
-            erros: [error.message]
+            erros: tratarErros(error)
         };
     }
 }
@@ -165,7 +167,7 @@ export function cadastrarTransacao(dados) {
         return {
             sucesso: false,
             transacao: null,
-            erros: [error.message]
+            erros: tratarErros(error)
         };
     }
 }
@@ -183,7 +185,7 @@ export function excluirTransacao(id) {
         return {
             sucesso: false,
             transacao: null,
-            erros: [error.message]
+            erros: tratarErros(error)
         };
     }
 }
@@ -225,7 +227,7 @@ export function editarTransacao(id, dados) {
         return {
             sucesso: false,
             transacao: null,
-            erros: [error.message]
+            erros: tratarErros(error)
         };
     }
 }
@@ -286,7 +288,7 @@ export function calcularResumo() {
         return {
             sucesso: false,
             resumo: null,
-            erros: [error.message]
+            erros: tratarErros(error)
         };
     }
 }
@@ -345,7 +347,7 @@ export function cadastrarOrcamentoCategoria(dados) {
         return {
             sucesso: false,
             orcamento: null,
-            erros: [error.message]
+            erros: tratarErros(error)
         };
     }
 }
@@ -411,7 +413,7 @@ export function listarOrcamentosCategoria() {
         return {
             sucesso: false,
             orcamentos: [],
-            erros: [error.message]
+            erros: tratarErros(error)
         };
     }
 }
@@ -429,7 +431,7 @@ export function excluirOrcamentoCategoria(id) {
         return {
             sucesso: false,
             orcamento: null,
-            erros: [error.message]
+            erros: tratarErros(error)
         };
     }
 }
@@ -489,7 +491,7 @@ export function editarOrcamentoCategoria(id, dados) {
         return {
             sucesso: false,
             orcamento: null,
-            erros: [error.message]
+            erros: tratarErros(error)
         };
     }
 }
@@ -561,7 +563,7 @@ export function filtrarTransacoes({
         return {
             sucesso: false,
             transacoes: [],
-            erros: [error.message]
+            erros: tratarErros(error)
         };
     }
 }
@@ -612,7 +614,7 @@ export function listarCategorias() {
         return {
             sucesso: false,
             categorias: [],
-            erros: [error.message]
+            erros: tratarErros(error)
         };
     }
 }
@@ -672,7 +674,7 @@ export function cadastrarCategoria(dados) {
         return {
             sucesso: false,
             categoria: null,
-            erros: [error.message]
+            erros: tratarErros(error)
         };
     }
 
@@ -734,7 +736,7 @@ export function editarCategoria(id, dados) {
         return {
             sucesso: false,
             categoria: null,
-            erros: [error.message]
+            erros: tratarErros(error)
         };
     }
 }
@@ -783,7 +785,7 @@ export function excluirCategoria(id) {
         return {
             sucesso: false,
             categoria: null,
-            erros: [error.message]
+            erros: tratarErros(error)
         };
     }
 }
@@ -831,7 +833,7 @@ export function cadastrarOrcamentoMensal(dados) {
         return {
             sucesso: false,
             orcamento: null,
-            erros: [error.message]
+            erros: tratarErros(error)
         };
     }
 }
@@ -875,7 +877,7 @@ export function listarOrcamentosMensais() {
         return {
             sucesso: false,
             orcamentos: [],
-            erros: [error.message]
+            erros: tratarErros(error)
         };
     }
 }
@@ -927,7 +929,7 @@ export function editarOrcamentoMensal(id, dados) {
         return {
             sucesso: false,
             orcamento: null,
-            erros: [error.message]
+            erros: tratarErros(error)
         };
     }
 }
@@ -945,7 +947,7 @@ export function excluirOrcamentoMensal(id) {
         return {
             sucesso: false,
             orcamento: null,
-            erros: [error.message]
+            erros: tratarErros(error)
         };
     }
 }
