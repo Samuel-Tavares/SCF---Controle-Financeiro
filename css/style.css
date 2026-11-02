@@ -1,19 +1,19 @@
 :root {
-    --ink: #253b36;
-    --ink-soft: #4e625b;
-    --muted: #71817a;
-    --forest: #25463d;
-    --forest-deep: #19372f;
-    --sage: #dce9df;
-    --paper: #fffefa;
-    --canvas: #f3f3ed;
-    --linen: #f6f6f0;
-    --line: #dfe6dc;
-    --copper: #af7656;
-    --success: #3e765d;
-    --danger: #aa625b;
-    --warning: #9a773e;
-    --shadow: 0 12px 34px rgba(31, 55, 45, 0.045);
+    --ink: #173746;
+    --ink-soft: #3b5965;
+    --muted: #607987;
+    --forest: #087b7e;
+    --forest-deep: #075e68;
+    --sage: #d6f3e9;
+    --paper: #ffffff;
+    --canvas: #eef5f5;
+    --linen: #f2f9f8;
+    --line: #d9e9e9;
+    --copper: #d85f49;
+    --success: #137c61;
+    --danger: #b84e58;
+    --warning: #a7671e;
+    --shadow: 0 13px 34px rgba(21, 75, 80, 0.075);
 }
 
 * {
@@ -68,10 +68,10 @@ button {
     height: 100vh;
     padding: 31px 17px 23px;
     overflow-y: auto;
-    color: #f1f2e9;
+    color: #f4fffc;
     background:
-        radial-gradient(circle at -20% 110%, rgba(198, 175, 127, 0.18), transparent 42%),
-        linear-gradient(165deg, #28473e 0%, #19342e 75%);
+        radial-gradient(circle at -15% 105%, rgba(19, 177, 171, 0.32), transparent 43%),
+        linear-gradient(165deg, #123d52 0%, #073e4b 76%);
 }
 
 .brand {
@@ -89,9 +89,9 @@ button {
     flex: none;
     width: 43px;
     height: 43px;
-    border: 1px solid rgba(251, 249, 230, 0.35);
+    border: 1px solid rgba(224, 252, 247, 0.44);
     border-radius: 13px;
-    color: #f7f3df;
+    color: #f2fffc;
     font-family: Georgia, serif;
     font-size: 27px;
     line-height: 1;
@@ -99,7 +99,7 @@ button {
 }
 
 .brand-symbol span {
-    color: #d3aa7a;
+    color: #ff9d79;
 }
 
 .brand-name {
@@ -113,7 +113,7 @@ button {
 .brand-name small {
     display: block;
     margin-top: 4px;
-    color: #b9c9bd;
+    color: #a9d7d6;
     font-family: "Aptos", "Segoe UI", system-ui, sans-serif;
     font-size: 10px;
     font-weight: 500;
@@ -128,7 +128,7 @@ button {
 
 .sidebar-caption {
     margin: 0 12px 14px;
-    color: #aabdb1;
+    color: #a8d5d5;
     font-size: 10px;
     font-weight: 700;
     letter-spacing: 0.17em;
@@ -148,7 +148,7 @@ button {
     padding: 0 12px;
     border: 1px solid transparent;
     border-radius: 11px;
-    color: #cedbd1;
+    color: #c4e5e2;
     font-size: 13px;
     font-weight: 550;
     text-decoration: none;
@@ -158,13 +158,14 @@ button {
 .sidebar-nav a:first-child,
 .sidebar-nav a:hover,
 .sidebar-nav a:focus-visible {
-    border-color: rgba(239, 243, 227, 0.1);
-    color: #fffef6;
-    background: rgba(239, 243, 227, 0.1);
+    border-color: rgba(222, 255, 250, 0.13);
+    color: #ffffff;
+    background: rgba(151, 235, 222, 0.14);
+    box-shadow: inset 3px 0 0 #ff9d79;
 }
 
 .sidebar-nav a span {
-    color: #a9bdb0;
+    color: #82d7cf;
     font-size: 11px;
     font-variant-numeric: tabular-nums;
 }
@@ -176,7 +177,7 @@ button {
     margin: auto 8px 0;
     padding: 15px 12px 0;
     border-top: 1px solid rgba(231, 239, 226, 0.14);
-    color: #b8c9bc;
+    color: #b4d9d8;
     font-size: 11px;
 }
 
@@ -184,8 +185,8 @@ button {
     width: 7px;
     height: 7px;
     border-radius: 50%;
-    background: #b7cfaa;
-    box-shadow: 0 0 0 4px rgba(183, 207, 170, 0.12);
+    background: #5ce0bd;
+    box-shadow: 0 0 0 4px rgba(92, 224, 189, 0.17);
 }
 
 .workspace {
@@ -203,7 +204,7 @@ button {
     height: 70px;
     padding: 0 clamp(22px, 3.5vw, 54px);
     border-bottom: 1px solid var(--line);
-    background: rgba(255, 254, 250, 0.94);
+    background: rgba(255, 255, 255, 0.94);
     backdrop-filter: blur(14px);
 }
 
@@ -216,7 +217,7 @@ button {
 
 .header-path span {
     margin: 0 9px;
-    color: #b4c3b7;
+    color: #92b9bd;
 }
 
 .header-link {
@@ -228,7 +229,7 @@ button {
     border-radius: 8px;
     color: var(--forest);
     font-size: 12px;
-    font-weight: 700;
+    font-weight: 800;
     text-decoration: none;
     transition: background-color 0.18s ease, color 0.18s ease;
 }
@@ -251,11 +252,11 @@ main {
     margin-bottom: 27px;
     padding: 30px 38px;
     overflow: hidden;
-    border: 1px solid #dfe7d9;
+    border: 1px solid #c9e9e3;
     border-radius: 20px;
     background:
-        radial-gradient(circle at 95% 10%, rgba(198, 214, 190, 0.45), transparent 31%),
-        linear-gradient(110deg, #e9f0e5, #f6f3e9);
+        radial-gradient(circle at 95% 5%, rgba(255, 195, 151, 0.34), transparent 30%),
+        linear-gradient(110deg, #dff4ec, #f5f9f1);
 }
 
 .page-intro::after {
@@ -264,13 +265,13 @@ main {
     bottom: -174px;
     width: 410px;
     height: 410px;
-    border: 1px solid rgba(74, 112, 91, 0.16);
+    border: 1px solid rgba(10, 130, 133, 0.2);
     border-radius: 50%;
     box-shadow:
         0 0 0 45px rgba(255, 255, 255, 0.15),
-        0 0 0 46px rgba(74, 112, 91, 0.1),
+        0 0 0 46px rgba(10, 130, 133, 0.13),
         0 0 0 90px rgba(255, 255, 255, 0.12),
-        0 0 0 91px rgba(74, 112, 91, 0.08);
+        0 0 0 91px rgba(10, 130, 133, 0.1);
     content: "";
     pointer-events: none;
 }
@@ -279,7 +280,7 @@ main {
 .section-kicker {
     margin: 0 0 9px;
     color: var(--copper);
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 800;
     letter-spacing: 0.18em;
     text-transform: uppercase;
@@ -291,8 +292,8 @@ main {
     max-width: 690px;
     margin: 0;
     font-family: Georgia, "Times New Roman", serif;
-    font-size: clamp(29px, 3.2vw, 46px);
-    font-weight: 500;
+    font-size: clamp(30px, 3.4vw, 49px);
+    font-weight: 700;
     letter-spacing: -0.045em;
     line-height: 1.12;
 }
@@ -307,7 +308,7 @@ main {
     max-width: 560px;
     margin: 14px 0 0;
     color: var(--ink-soft);
-    font-size: 13px;
+    font-size: 14px;
 }
 
 section {
@@ -332,8 +333,8 @@ section {
 .section-heading h2 {
     margin: 0;
     font-family: Georgia, "Times New Roman", serif;
-    font-size: clamp(23px, 2.1vw, 30px);
-    font-weight: 500;
+    font-size: clamp(25px, 2.25vw, 32px);
+    font-weight: 700;
     letter-spacing: -0.035em;
     line-height: 1.2;
 }
@@ -342,7 +343,7 @@ section {
     max-width: 300px;
     margin: 0 0 2px;
     color: var(--muted);
-    font-size: 12px;
+    font-size: 13px;
     text-align: right;
 }
 
@@ -361,16 +362,16 @@ section {
     min-height: 140px;
     padding: 23px 20px 18px;
     overflow: hidden;
-    border: 1px solid #e4e9df;
+    border: 1px solid #c7e9dc;
     border-radius: 14px;
-    background: #f8f9f3;
+    background: #edf9f3;
 }
 
 .resumo-card::before {
     position: absolute;
     top: 18px;
     right: 19px;
-    color: #afbdaf;
+    color: #68ad99;
     font-family: Georgia, serif;
     font-size: 21px;
     line-height: 1;
@@ -378,19 +379,31 @@ section {
 }
 
 .resumo-card:nth-child(2)::before {
+    color: #de9081;
     content: "↘";
 }
 
 .resumo-card:nth-child(4)::before {
+    color: #a092ce;
     content: "%";
+}
+
+.resumo-card:nth-child(2) {
+    border-color: #f3d7cc;
+    background: #fff3ed;
+}
+
+.resumo-card:nth-child(4) {
+    border-color: #e5dafa;
+    background: #f7f2ff;
 }
 
 .resumo-card h3 {
     max-width: calc(100% - 24px);
     margin: 0;
-    color: #60746b;
-    font-size: 11px;
-    font-weight: 700;
+    color: #376c60;
+    font-size: 12px;
+    font-weight: 800;
     letter-spacing: 0.045em;
     text-transform: uppercase;
 }
@@ -399,23 +412,39 @@ section {
     margin: 24px 0 0;
     overflow-wrap: anywhere;
     font-family: Georgia, "Times New Roman", serif;
-    font-size: clamp(23px, 2.2vw, 34px);
+    color: #08745f;
+    font-size: clamp(25px, 2.45vw, 37px);
+    font-weight: 700;
     font-variant-numeric: lining-nums tabular-nums;
     letter-spacing: -0.045em;
     line-height: 1.1;
 }
 
+.resumo-card:nth-child(2) h3,
+.resumo-card:nth-child(2) p {
+    color: #a94947;
+}
+
+.resumo-card:nth-child(4) h3,
+.resumo-card:nth-child(4) p {
+    color: #624f9b;
+}
+
 .resumo-card:nth-child(3) {
     border-color: var(--forest);
-    color: #fffef8;
+    color: #ffffff;
     background:
-        radial-gradient(circle at 90% 90%, rgba(194, 170, 128, 0.17), transparent 45%),
-        var(--forest);
+        radial-gradient(circle at 90% 90%, rgba(83, 221, 201, 0.27), transparent 48%),
+        linear-gradient(135deg, #087d80, #075766);
 }
 
 .resumo-card:nth-child(3) h3,
 .resumo-card:nth-child(3)::before {
-    color: #c7dbca;
+    color: #c7fbef;
+}
+
+.resumo-card:nth-child(3) p {
+    color: #ffffff;
 }
 
 .resumo-card:nth-child(3)::before {
@@ -446,8 +475,8 @@ section {
 
 .form-group label {
     color: var(--ink-soft);
-    font-size: 11px;
-    font-weight: 700;
+    font-size: 12px;
+    font-weight: 800;
     letter-spacing: 0.035em;
 }
 
@@ -457,12 +486,12 @@ section {
     width: 100%;
     min-height: 43px;
     padding: 10px 12px;
-    border: 1px solid #d9e2d8;
+    border: 1px solid #cce0e1;
     border-radius: 8px;
     outline: none;
     color: var(--ink);
     background: #fff;
-    font-size: 13px;
+    font-size: 14px;
     transition: border-color 0.18s ease, box-shadow 0.18s ease;
 }
 
@@ -474,14 +503,14 @@ section {
 .form-group input:hover,
 .form-group select:hover,
 .form-group textarea:hover {
-    border-color: #aec3b3;
+    border-color: #7cc4bd;
 }
 
 .form-group input:focus-visible,
 .form-group select:focus-visible,
 .form-group textarea:focus-visible {
-    border-color: #6d947e;
-    box-shadow: 0 0 0 3px rgba(95, 142, 111, 0.16);
+    border-color: #0a9390;
+    box-shadow: 0 0 0 3px rgba(16, 161, 150, 0.16);
 }
 
 .form-group textarea {
@@ -510,8 +539,8 @@ section {
     border-radius: 8px;
     color: white;
     background: var(--forest);
-    font-size: 12px;
-    font-weight: 700;
+    font-size: 13px;
+    font-weight: 800;
     transition: background-color 0.18s ease, transform 0.18s ease;
 }
 
@@ -523,14 +552,14 @@ section {
 
 .acoes-formulario .botao-cancelar,
 .acoes-filtros .botao-cancelar {
-    border-color: #d5dfd3;
+    border-color: #d0e2e1;
     color: var(--ink-soft);
-    background: #edf1e9;
+    background: #e9f2f2;
 }
 
 .acoes-formulario .botao-cancelar:hover,
 .acoes-filtros .botao-cancelar:hover {
-    background: #e3eae0;
+    background: #d9eaea;
 }
 
 .mensagem-formulario {
@@ -578,7 +607,7 @@ section {
     flex-direction: column;
     gap: 16px;
     padding: 20px;
-    border: 1px solid #e7eade;
+    border: 1px solid #d7e9e8;
     border-radius: 12px;
     background: var(--linen);
 }
@@ -621,7 +650,7 @@ table {
 }
 
 thead {
-    background: #f3f6ef;
+    background: #e8f5f3;
 }
 
 th,
@@ -633,8 +662,8 @@ td {
 }
 
 th {
-    color: #6c8072;
-    font-size: 10px;
+    color: #287178;
+    font-size: 11px;
     font-weight: 800;
     letter-spacing: 0.07em;
     text-transform: uppercase;
@@ -642,7 +671,7 @@ th {
 }
 
 td {
-    color: #40534a;
+    color: #36515c;
     font-variant-numeric: tabular-nums;
 }
 
@@ -651,7 +680,7 @@ tbody tr:last-child td {
 }
 
 tbody tr:hover {
-    background: #fbfcf8;
+    background: #f3fbfa;
 }
 
 td:first-child {
@@ -682,28 +711,28 @@ td.acoes-orcamento button + button {
 .botao-excluir {
     min-height: 30px;
     padding: 5px 10px;
-    border: 1px solid #dce7dc;
+    border: 1px solid #cce7e3;
     border-radius: 6px;
     color: var(--forest);
-    background: #f2f6ef;
-    font-size: 11px;
-    font-weight: 700;
+    background: #eaf7f3;
+    font-size: 12px;
+    font-weight: 800;
 }
 
 .botao-editar:hover {
-    border-color: #bdd3bd;
-    background: #e6eee4;
+    border-color: #9ad8ce;
+    background: #d9f2ea;
 }
 
 .botao-excluir {
-    border-color: #f0dcd7;
-    color: #9b534d;
-    background: #fcf4f1;
+    border-color: #f0d0cc;
+    color: #a8464e;
+    background: #fff0ed;
 }
 
 .botao-excluir:hover {
-    border-color: #e5beb6;
-    background: #f8eae5;
+    border-color: #e6aaa8;
+    background: #fbe1de;
 }
 
 #tabela-orcamentos-container .orcamento-alerta,
@@ -735,7 +764,7 @@ td.acoes-orcamento button + button {
     gap: 13px;
     margin-bottom: 18px;
     padding: 18px;
-    border: 1px solid #e4e9df;
+    border: 1px solid #d7e9e8;
     border-radius: 11px;
     background: var(--linen);
 }
@@ -751,16 +780,16 @@ td.acoes-orcamento button + button {
 .paginacao button {
     min-height: 34px;
     padding: 6px 13px;
-    border: 1px solid #d9e3d8;
+    border: 1px solid #cce7e3;
     border-radius: 7px;
     color: var(--forest);
-    background: #f2f6ef;
+    background: #eaf7f3;
     font-size: 12px;
     font-weight: 700;
 }
 
 .paginacao button:hover:not(:disabled) {
-    background: #e5eee3;
+    background: #d9f2ea;
 }
 
 .paginacao button:disabled {
@@ -777,7 +806,7 @@ td.acoes-orcamento button + button {
 
 a:focus-visible,
 button:focus-visible {
-    outline: 3px solid #91b29b;
+    outline: 3px solid #42c7ba;
     outline-offset: 3px;
 }
 
