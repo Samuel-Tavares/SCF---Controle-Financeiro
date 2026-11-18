@@ -34,6 +34,8 @@ import {
     renderizarCategoriasFiltro
 } from "../views/categoriaView.js";
 
+import { obterMesSelecionado, observarPeriodo } from "../services/periodoService.js";
+
 let idTransacaoEmEdicao = null;
 let filtrosAtivos = {};
 let paginaAtual = 1;
@@ -67,7 +69,10 @@ function atualizarCategoriasDoFormulario(
 }
 
 function atualizarListaTransacoes() {
-    const resultado = filtrarTransacoes(filtrosAtivos);
+    const resultado = filtrarTransacoes({
+        ...filtrosAtivos,
+        mesReferencia: obterMesSelecionado()
+    });
 
     if (!resultado.sucesso) {
         paginaAtual = 1;
@@ -88,7 +93,7 @@ function atualizarListaTransacoes() {
 
     const mensagemListaVazia = possuiFiltrosAtivos
         ? "Nenhuma transação encontrada para os filtros selecionados."
-        : "Nenhuma transação cadastrada.";
+        : "Nenhuma transação cadastrada para o mês selecionado.";
 
     const paginacao = paginarTransacoes(resultado.transacoes, paginaAtual, ITENS_POR_PAGINA);
 
@@ -199,7 +204,6 @@ export function inicializarTransacaoController() {
     const formularioFiltros = document.querySelector("#form-filtros-transacoes");
     const filtroTipo = document.querySelector("#filtro-tipo");
     const filtroCategoria = document.querySelector("#filtro-categoria");
-    const filtroMes = document.querySelector("#filtro-mes");
     const filtroDescricao = document.querySelector("#filtro-descricao");
     const botaoLimparFiltros = document.querySelector("#limpar-filtros-transacoes");
     const botaoPaginaAnterior = document.querySelector("#pagina-anterior");
@@ -226,6 +230,12 @@ export function inicializarTransacaoController() {
 
     atualizarListaTransacoes();
     atualizarResumoFinanceiro();
+
+    observarPeriodo(() => {
+        paginaAtual = 1;
+        atualizarListaTransacoes();
+        atualizarResumoFinanceiro();
+    });
 
     inputTipo.addEventListener("change", function() {
         atualizarCategoriasDoFormulario(
@@ -256,7 +266,6 @@ export function inicializarTransacaoController() {
             filtrosAtivos = {
                 tipo: filtroTipo.value,
                 categoria: filtroCategoria.value,
-                mesReferencia: filtroMes.value,
                 descricao: filtroDescricao.value
             };
 
@@ -326,7 +335,7 @@ export function inicializarTransacaoController() {
 }
 
 function atualizarResumoFinanceiro() {
-    const resultado = calcularResumo();
+    const resultado = calcularResumo(obterMesSelecionado());
 
     if (!resultado.sucesso) {
         console.error(resultado.erros);

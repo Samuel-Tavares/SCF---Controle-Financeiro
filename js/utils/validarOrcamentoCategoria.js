@@ -1,5 +1,11 @@
+import { mesValido } from "./periodo.js";
+
 export function validarOrcamentoCategoria(orcamento, categoria) {
     const erros = [];
+
+    if (!mesValido(orcamento.mes)) {
+        erros.push("Informe um mês válido no formato YYYY-MM.");
+    }
 
     if (
         orcamento.categoria === ""

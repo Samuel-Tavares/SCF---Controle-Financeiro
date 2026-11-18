@@ -20,12 +20,15 @@ import {
     renderizarCategoriasOrcamento
 } from "../views/categoriaView.js";
 
+import { obterMesSelecionado, observarPeriodo } from "../services/periodoService.js";
+import { formatarMesReferencia } from "../utils/formatadores.js";
+
 let idOrcamentoEmEdicao = null;
 const SELETOR_MENSAGEM = "#mensagem-orcamento";
 
 
 export function atualizarListaOrcamentosCategoria() {
-    const resultado = listarOrcamentosCategoria();
+    const resultado = listarOrcamentosCategoria(obterMesSelecionado());
 
     if (!resultado.sucesso) {
         exibirMensagem(
@@ -95,6 +98,13 @@ export function inicializarOrcamentoCategoriaController() {
     );
 
     const botaoCancelar = document.querySelector("#cancelar-edicao-orcamento");
+    const inputMes = document.querySelector("#orcamento-categoria-mes");
+    inputMes.value = obterMesSelecionado();
+
+    observarPeriodo(() => {
+        if (idOrcamentoEmEdicao === null) inputMes.value = obterMesSelecionado();
+        atualizarListaOrcamentosCategoria();
+    });
 
     const resultadoCategorias = listarCategorias();
 
@@ -128,6 +138,7 @@ export function inicializarOrcamentoCategoriaController() {
 
         const orcamento = {
             categoria: inputCategoria.value,
+            mes: inputMes.value,
             valorLimite: Number(inputValorLimite.value)
         };
 
@@ -146,9 +157,13 @@ export function inicializarOrcamentoCategoriaController() {
         restaurarModoCadastroOrcamento();
         atualizarListaOrcamentosCategoria();
 
-        const mensagemSucesso = estaEditando
+        let mensagemSucesso = estaEditando
             ? "Orçamento atualizado com sucesso."
             : "Orçamento cadastrado com sucesso."
+
+        if (orcamento.mes !== obterMesSelecionado()) {
+            mensagemSucesso += ` Selecione ${formatarMesReferencia(orcamento.mes)} na visualização para consultá-lo.`;
+        }
 
         exibirMensagem(
             SELETOR_MENSAGEM,
@@ -165,6 +180,7 @@ function tratarEdicaoOrcamento(orcamento) {
     idOrcamentoEmEdicao = orcamento.id;
 
     document.querySelector("#orcamento-categoria").value = orcamento.categoria;
+    document.querySelector("#orcamento-categoria-mes").value = orcamento.mes;
     document.querySelector("#orcamento-valor-limite").value = orcamento.valorLimite;
     document.querySelector("#cancelar-edicao-orcamento").hidden = false;
 
@@ -193,6 +209,7 @@ function restaurarModoCadastroOrcamento() {
     const botaoCancelar = document.querySelector("#cancelar-edicao-orcamento");
 
     formulario.reset();
+    document.querySelector("#orcamento-categoria-mes").value = obterMesSelecionado();
     botaoEnviar.textContent = "Cadastrar orçamento";
     botaoCancelar.hidden = true;
 }

@@ -67,7 +67,7 @@ export function renderizarOrcamentosMensais(
         const linha = document.createElement("tr");
 
         const celula = criarCelula(
-            "Nenhum orçamento mensal cadastrado."
+            "Nenhum orçamento mensal cadastrado para o mês selecionado."
         );
 
         celula.colSpan = 5;

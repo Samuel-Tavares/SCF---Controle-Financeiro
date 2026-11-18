@@ -41,13 +41,31 @@
                     <p>Acompanhe seus movimentos, organize limites e veja o que importa em um só lugar.</p>
                 </div>
 
+        <section class="periodo-visualizacao" aria-label="Período de visualização">
+            <div>
+                <p class="section-kicker">Período de visualização</p>
+                <p id="periodo-selecionado" role="status"></p>
+                <p class="periodo-ajuda" id="mes-atual-identificado"></p>
+                <p class="periodo-ajuda" id="periodo-ajuda">O mês selecionado se aplica à visão geral, aos orçamentos e ao histórico.</p>
+            </div>
+            <div class="periodo-controles">
+                <div class="form-group">
+                    <label for="mes-visualizacao">Visualizar mês</label>
+                    <input type="month" id="mes-visualizacao" min="0001-01" max="9999-12" required aria-describedby="periodo-ajuda">
+                </div>
+                <div class="acoes-filtros">
+                    <button type="button" id="visualizar-mes-atual">Mês atual</button>
+                </div>
+            </div>
+        </section>
+
         <section id="resumo-financeiro">
             <div class="section-heading">
                 <div>
                     <p class="section-kicker">01 / Panorama</p>
                     <h2>Visão geral</h2>
                 </div>
-                <p>Indicadores de todas as transações cadastradas.</p>
+                <p>Indicadores de <span data-periodo></span>.</p>
             </div>
 
             <div class="resumo-cards">
@@ -163,7 +181,7 @@
                     <p class="section-kicker">03 / Planejamento</p>
                     <h2>Orçamento mensal</h2>
                 </div>
-                <p>Compare seu limite com as despesas de cada mês.</p>
+                <p>Limite e despesas de <span data-periodo></span>.</p>
             </div>
 
             <form id="form-orcamento-mensal">
@@ -242,10 +260,14 @@
                     <p class="section-kicker">04 / Prioridades</p>
                     <h2>Por categoria</h2>
                 </div>
-                <p>Veja quanto cada categoria já utilizou do seu limite.</p>
+                <p>Limites por categoria em <span data-periodo></span>.</p>
             </div>
 
             <form id="form-novo-orcamento">
+                <div class="form-group">
+                    <label for="orcamento-categoria-mes">Mês</label>
+                    <input type="month" id="orcamento-categoria-mes" name="mes" min="0001-01" max="9999-12" required>
+                </div>
                 <div class="form-group">
                     <label for="orcamento-categoria">Categoria</label>
 
@@ -300,6 +322,7 @@
                     <thead>
                         <tr>
                             <th scope="col">Categoria</th>
+                            <th scope="col">Mês</th>
                             <th scope="col">Limite</th>
                             <th scope="col">Valor utilizado</th>
                             <th scope="col">Percentual atingido</th>
@@ -318,7 +341,7 @@
                     <p class="section-kicker">05 / Registro</p>
                     <h2>Histórico de transações</h2>
                 </div>
-                <p>Encontre, revise e acompanhe seus lançamentos.</p>
+                <p>Lançamentos de <span data-periodo></span>.</p>
             </div>
 
             <form id="form-filtros-transacoes">
@@ -338,16 +361,6 @@
                     <select id="filtro-categoria" name="categoria">
                         <option value="" selected>Todas</option>
                     </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="filtro-mes">Mês</label>
-
-                    <input
-                        type="month"
-                        id="filtro-mes"
-                        name="mesReferencia"
-                    >
                 </div>
 
                 <div class="form-group">

@@ -15,12 +15,15 @@ import {
     limparMensagem
 } from "../views/mensagemView.js";
 
+import { obterMesSelecionado, observarPeriodo } from "../services/periodoService.js";
+import { formatarMesReferencia } from "../utils/formatadores.js";
+
 let idOrcamentoMensalEmEdicao = null;
 
 const SELETOR_MENSAGEM = "#mensagem-orcamento-mensal";
 
 export function atualizarListaOrcamentosMensais() {
-    const resultado = listarOrcamentosMensais();
+    const resultado = listarOrcamentosMensais(obterMesSelecionado());
 
     if (!resultado.sucesso) {
         exibirMensagem(
@@ -60,6 +63,7 @@ function restaurarModoCadastroOrcamentoMensal() {
     );
 
     formulario.reset();
+    document.querySelector("#orcamento-mensal-mes").value = obterMesSelecionado();
 
     botaoEnviar.textContent =
         "Cadastrar orçamento mensal";
@@ -139,6 +143,12 @@ export function inicializarOrcamentoMensalController() {
     const inputMes = document.querySelector(
         "#orcamento-mensal-mes"
     )
+    inputMes.value = obterMesSelecionado();
+
+    observarPeriodo(() => {
+        if (idOrcamentoMensalEmEdicao === null) inputMes.value = obterMesSelecionado();
+        atualizarListaOrcamentosMensais();
+    });
 
     const inputValorLimite = document.querySelector(
         "#orcamento-mensal-valor-limite"
@@ -194,9 +204,13 @@ export function inicializarOrcamentoMensalController() {
             restaurarModoCadastroOrcamentoMensal();
             atualizarListaOrcamentosMensais();
 
-            const mensagem = estaEditando
+            let mensagem = estaEditando
                 ? "Orçamento mensal atualizado com sucesso."
                 : "Orçamento mensal cadastrado com sucesso.";
+
+            if (orcamento.mes !== obterMesSelecionado()) {
+                mensagem += ` Selecione ${formatarMesReferencia(orcamento.mes)} na visualização para consultá-lo.`;
+            }
 
             exibirMensagem(
                 SELETOR_MENSAGEM,

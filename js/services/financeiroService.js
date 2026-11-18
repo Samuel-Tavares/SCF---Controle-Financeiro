@@ -45,6 +45,7 @@ import {
 } from "../repositories/orcamentoMensalRepository.js";
 
 import { tratarErros } from "../utils/tratarErros.js";
+import { obterMesAtual, pertenceAoMes } from "../utils/periodo.js";
 
 const CATEGORIAS_INICIAIS = [
     {
@@ -239,9 +240,11 @@ export function calcularSaldo(
     return (receitasEmCentavos - despesasEmCentavos) / 100;
 }
 
-export function calcularResumo() {
+export function calcularResumo(mesReferencia = obterMesAtual()) {
     try {
-        const transacoes = carregarTransacoes();
+        const transacoes = carregarTransacoes().filter(
+            (transacao) => pertenceAoMes(transacao.data, mesReferencia)
+        );
 
         let receitasEmCentavos = 0;
         let despesasEmCentavos = 0;
@@ -317,6 +320,7 @@ export function cadastrarOrcamentoCategoria(dados) {
         const orcamentoExistente = orcamentos.some(
             (orcamento) =>
                 orcamento.categoria === dados.categoria
+                && orcamento.mes === dados.mes
         );
 
         if (orcamentoExistente) {
@@ -324,7 +328,7 @@ export function cadastrarOrcamentoCategoria(dados) {
                 sucesso: false,
                 orcamento: null,
                 erros: [
-                    "Já existe um orçamento para esta categoria."
+                    "Já existe um orçamento para esta categoria neste mês."
                 ]
             };
         }
@@ -368,9 +372,11 @@ export function calcularOrcamentos(valorLimite, despesas) {
     };
 }
 
-export function listarOrcamentosCategoria() {
+export function listarOrcamentosCategoria(mesReferencia = obterMesAtual()) {
     try {
-        const orcamentos = carregarOrcamentos();
+        const orcamentos = carregarOrcamentos().filter(
+            (orcamento) => orcamento.mes === mesReferencia
+        );
         const transacoes = carregarTransacoes();
         const categorias = carregarCategorias();
 
@@ -380,6 +386,7 @@ export function listarOrcamentosCategoria() {
                     (transacao) =>
                         transacao.tipo === "despesa"
                         && transacao.categoria === orcamento.categoria
+                        && pertenceAoMes(transacao.data, orcamento.mes)
                 );
 
                 const { valorUtilizado, percentualAtingido } =
@@ -461,6 +468,7 @@ export function editarOrcamentoCategoria(id, dados) {
             (orcamento) =>
                 orcamento.id !== id
                 && orcamento.categoria === dados.categoria
+                && orcamento.mes === dados.mes
         );
 
         if (orcamentoDuplicado) {
@@ -468,7 +476,7 @@ export function editarOrcamentoCategoria(id, dados) {
                 sucesso: false,
                 orcamento: null,
                 erros: [
-                    "Já existe um orçamento para esta categoria."
+                    "Já existe um orçamento para esta categoria neste mês."
                 ]
             };
         }
@@ -514,7 +522,7 @@ export function ordenar(transacoes) {
 export function filtrarTransacoes({
     tipo = "",
     categoria = "",
-    mesReferencia = "",
+    mesReferencia = obterMesAtual(),
     descricao = ""
 } = {}) {
     try {
@@ -533,7 +541,7 @@ export function filtrarTransacoes({
                     categoria === "" || transacao.categoria === categoria;
 
                 const correspondeAoMes =
-                    mesReferencia === "" || transacao.data.startsWith(mesReferencia);
+                    pertenceAoMes(transacao.data, mesReferencia);
 
                 return (
                     correspondeAoTipo
@@ -838,9 +846,11 @@ export function cadastrarOrcamentoMensal(dados) {
     }
 }
 
-export function listarOrcamentosMensais() {
+export function listarOrcamentosMensais(mesReferencia = obterMesAtual()) {
     try {
-        const orcamento = carregarOrcamentosMensais();
+        const orcamento = carregarOrcamentosMensais().filter(
+            (orcamento) => orcamento.mes === mesReferencia
+        );
 
         const transacoes = carregarTransacoes();
 
@@ -849,9 +859,7 @@ export function listarOrcamentosMensais() {
                 const despesasDoMes = transacoes.filter(
                     (transacao) =>
                         transacao.tipo === "despesa"
-                        && transacao.data.startsWith(
-                            orcamento.mes
-                        )
+                        && pertenceAoMes(transacao.data, orcamento.mes)
                 );
 
                 const { valorUtilizado, percentualAtingido } =

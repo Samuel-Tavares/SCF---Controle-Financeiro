@@ -1,9 +1,9 @@
+import { mesValido } from "./periodo.js";
+
 export function validarOrcamentoMensal(orcamento) {
     const erros = [];
 
-    const formatoMesValido = /^\d{4}-(0[1-9]|1[0-2])$/;
-
-    if (!formatoMesValido.test(orcamento.mes)) {
+    if (!mesValido(orcamento.mes)) {
         erros.push("O mês deve estar no formato YYYY-MM.");
     }
 

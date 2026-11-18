@@ -1,6 +1,7 @@
 import {
     formatarMoeda,
-    formatarPorcentagem
+    formatarPorcentagem,
+    formatarMesReferencia
 } from "../utils/formatadores.js";
 
 function criarCelula(conteudo) {
@@ -56,9 +57,9 @@ export function renderizarOrcamentosCategoria(orcamentos, aoEditar, aoExcluir) {
     if (orcamentos.length === 0) {
         const linha = document.createElement("tr");
 
-        const celula = criarCelula("Nenhum orçamento cadastrado.");
+        const celula = criarCelula("Nenhum orçamento por categoria cadastrado para o mês selecionado.");
 
-        celula.colSpan = 5;
+        celula.colSpan = 6;
 
         linha.append(celula);
         corpoTabela.append(linha);
@@ -87,6 +88,7 @@ export function renderizarOrcamentosCategoria(orcamentos, aoEditar, aoExcluir) {
 
         linha.append(
             criarCelula(orcamento.categoriaNome),
+            criarCelula(formatarMesReferencia(orcamento.mes)),
             criarCelula(formatarMoeda(orcamento.valorLimite)),
             criarCelula(formatarMoeda(orcamento.valorUtilizado)),
             criarCelula(formatarPorcentagem(orcamento.percentualAtingido)),
