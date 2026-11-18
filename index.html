@@ -59,31 +59,67 @@
             </div>
         </section>
 
-        <section id="resumo-financeiro">
+        <section id="resumo-financeiro" aria-labelledby="titulo-resumo">
             <div class="section-heading">
                 <div>
                     <p class="section-kicker">01 / Panorama</p>
-                    <h2>Visão geral</h2>
+                    <h2 id="titulo-resumo">Visão geral</h2>
                 </div>
-                <p>Indicadores de <span data-periodo></span>.</p>
+                <p class="resumo-periodo">
+                    <span>Período selecionado</span>
+                    <strong data-periodo></strong>
+                </p>
             </div>
 
             <div class="resumo-cards">
-                <article class="resumo-card">
-                    <h3>Total de receitas</h3>
-                    <p id="total-receitas">R$ 0,00</p>
+                <article class="resumo-card resumo-card-saldo" aria-labelledby="titulo-saldo">
+                    <div class="resumo-card-cabecalho">
+                        <h3 id="titulo-saldo">Saldo do mês</h3>
+                        <span class="resumo-card-icone" aria-hidden="true">◇</span>
+                    </div>
+                    <div class="resumo-card-destaque">
+                        <p id="saldo" class="resumo-valor">R$ 0,00</p>
+                        <p class="resumo-card-descricao">Receitas menos despesas do período.</p>
+                    </div>
+                    <a class="resumo-card-link" href="#historico-transacoes">
+                        Ver movimentações <span aria-hidden="true">→</span>
+                    </a>
                 </article>
-                <article class="resumo-card">
-                    <h3>Total de despesas</h3>
-                    <p id="total-despesas">R$ 0,00</p>
+
+                <article class="resumo-card resumo-card-receitas" aria-labelledby="titulo-receitas">
+                    <div class="resumo-card-cabecalho">
+                        <h3 id="titulo-receitas">Total de receitas</h3>
+                        <span class="resumo-card-icone" aria-hidden="true">↗</span>
+                    </div>
+                    <p id="total-receitas" class="resumo-valor">R$ 0,00</p>
+                    <p class="resumo-card-descricao">Entradas no mês</p>
                 </article>
-                <article class="resumo-card">
-                    <h3>Saldo</h3>
-                    <p id="saldo">R$ 0,00</p>
+
+                <article class="resumo-card resumo-card-despesas" aria-labelledby="titulo-despesas">
+                    <div class="resumo-card-cabecalho">
+                        <h3 id="titulo-despesas">Total de despesas</h3>
+                        <span class="resumo-card-icone" aria-hidden="true">↘</span>
+                    </div>
+                    <p id="total-despesas" class="resumo-valor">R$ 0,00</p>
+                    <p class="resumo-card-descricao">Saídas no mês</p>
                 </article>
-                <article class="resumo-card">
-                    <h3>Taxa de economia</h3>
-                    <p id="taxa-economia">0,00%</p>
+
+                <article class="resumo-card resumo-card-orcamento" aria-labelledby="titulo-orcamento-resumo">
+                    <div class="resumo-card-cabecalho">
+                        <h3 id="titulo-orcamento-resumo">Orçamento mensal</h3>
+                        <span class="resumo-card-icone" aria-hidden="true">◎</span>
+                    </div>
+                    <p id="resumo-orcamento-mensal" class="resumo-valor sem-orcamento">Não definido</p>
+                    <p class="resumo-card-descricao">Limite de gastos planejado</p>
+                </article>
+
+                <article class="resumo-card resumo-card-economia" aria-labelledby="titulo-economia">
+                    <div class="resumo-card-cabecalho">
+                        <h3 id="titulo-economia">Taxa de economia</h3>
+                        <span class="resumo-card-icone" aria-hidden="true">%</span>
+                    </div>
+                    <p id="taxa-economia" class="resumo-valor">0,00%</p>
+                    <p class="resumo-card-descricao">Saldo em relação às receitas</p>
                 </article>
             </div>
         </section>

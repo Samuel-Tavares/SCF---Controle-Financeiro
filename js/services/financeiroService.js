@@ -275,11 +275,16 @@ export function calcularResumo(mesReferencia = obterMesAtual()) {
             (receitasEmCentavos - despesasEmCentavos) / receitasEmCentavos) * 100
             : 0;
 
+        const orcamentoDoMes = carregarOrcamentosMensais().find(
+            (orcamento) => orcamento.mes === mesReferencia
+        );
+
         const resumo = new ResumoFinanceiro({
             totalReceitas,
             totalDespesas,
             saldo,
-            taxaEconomia
+            taxaEconomia,
+            orcamentoMensal: orcamentoDoMes?.valorLimite ?? null
         });
 
         return {

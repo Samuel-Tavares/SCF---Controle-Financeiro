@@ -2,7 +2,6 @@ import {
     cadastrarTransacao,
     editarTransacao,
     excluirTransacao,
-    calcularResumo,
     filtrarTransacoes,
     paginarTransacoes,
     listarCategorias
@@ -14,7 +13,7 @@ import {
     renderizarPaginacao
 } from "../views/transacaoView.js";
 
-import { renderizarResumo } from "../views/resumoView.js";
+import { atualizarResumoFinanceiro } from "./resumoController.js";
 
 import {
     atualizarListaOrcamentosCategoria
@@ -332,15 +331,4 @@ export function inicializarTransacaoController() {
             "sucesso"
         );
     });
-}
-
-function atualizarResumoFinanceiro() {
-    const resultado = calcularResumo(obterMesSelecionado());
-
-    if (!resultado.sucesso) {
-        console.error(resultado.erros);
-        return;
-    }
-
-    renderizarResumo(resultado.resumo);
 }

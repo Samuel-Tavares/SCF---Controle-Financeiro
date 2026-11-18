@@ -17,6 +17,7 @@ import {
 
 import { obterMesSelecionado, observarPeriodo } from "../services/periodoService.js";
 import { formatarMesReferencia } from "../utils/formatadores.js";
+import { atualizarResumoFinanceiro } from "./resumoController.js";
 
 let idOrcamentoMensalEmEdicao = null;
 
@@ -126,6 +127,7 @@ function tratarExclusaoOrcamentoMensal(id) {
     }
 
     atualizarListaOrcamentosMensais();
+    atualizarResumoFinanceiro();
 
     exibirMensagem(
         SELETOR_MENSAGEM,
@@ -203,6 +205,7 @@ export function inicializarOrcamentoMensalController() {
 
             restaurarModoCadastroOrcamentoMensal();
             atualizarListaOrcamentosMensais();
+            atualizarResumoFinanceiro();
 
             let mensagem = estaEditando
                 ? "Orçamento mensal atualizado com sucesso."
@@ -220,4 +223,3 @@ export function inicializarOrcamentoMensalController() {
         }
     );
 }
-
