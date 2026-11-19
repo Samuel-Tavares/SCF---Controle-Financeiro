@@ -41,6 +41,30 @@
                     <p>Acompanhe seus movimentos, organize limites e veja o que importa em um só lugar.</p>
                 </div>
 
+
+        <section id="conexao-google" aria-labelledby="titulo-conexao-google">
+            <div class="section-heading">
+                <div>
+                    <p class="section-kicker">Armazenamento</p>
+                    <h2 id="titulo-conexao-google">Google Sheets</h2>
+                </div>
+
+                <p>Conecte sua conta para preparar o acesso à planilha.</p>
+            </div>
+
+            <div class="acoes-formulario">
+                <button type="button" id="conectar-google">
+                    Conectar ao Google Sheets
+                </button>
+            </div>
+
+            <p
+                id="mensagem-google"
+                class="mensagem-formulario"
+                aria-live="polite"
+            ></p>
+        </section>
+
         <section class="periodo-visualizacao" aria-label="Período de visualização">
             <div>
                 <p class="section-kicker">Período de visualização</p>
@@ -466,6 +490,11 @@
             </main>
         </div>
     </div>
+
+    <script
+        src="https://accounts.google.com/gsi/client"
+        async
+    ></script>
 
     <script type="module" src="js/main.js"></script>
 </body>

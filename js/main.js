@@ -3,6 +3,7 @@ import { inicializarOrcamentoCategoriaController } from "./controllers/orcamento
 import { inicializarCategorias } from "./services/financeiroService.js";
 import { inicializarOrcamentoMensalController } from "./controllers/orcamentoMensalController.js";
 import { inicializarPeriodoController } from "./controllers/periodoController.js";
+import { inicializarGoogleController } from "./controllers/googleController.js";
 
 const resultadoCategorias = inicializarCategorias();
 
@@ -14,3 +15,4 @@ inicializarPeriodoController();
 inicializarTransacaoController();
 inicializarOrcamentoCategoriaController();
 inicializarOrcamentoMensalController();
+inicializarGoogleController();
