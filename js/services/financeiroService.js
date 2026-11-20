@@ -47,7 +47,7 @@ import {
 import { tratarErros } from "../utils/tratarErros.js";
 import { obterMesAtual, pertenceAoMes } from "../utils/periodo.js";
 
-const CATEGORIAS_INICIAIS = [
+export const CATEGORIAS_INICIAIS = [
     {
         id: "alimentacao",
         nome: "Alimentação",

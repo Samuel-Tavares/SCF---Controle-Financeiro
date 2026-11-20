@@ -1,5 +1,13 @@
 import { conectarGoogle } from "../services/googleAuthService.js";
-import { prepararPlanilha } from "../services/googleSheetsService.js";
+import {
+    prepararPlanilha,
+    lerRegistros,
+    adicionarRegistros
+} from "../services/googleSheetsService.js";
+
+import {
+    CATEGORIAS_INICIAIS
+} from "../services/financeiroService.js";
 
 import {
     exibirMensagem,
@@ -29,6 +37,26 @@ export function inicializarGoogleController() {
             botao.textContent = "Preparando planilha...";
 
             const planilha = await prepararPlanilha();
+
+            botao.textContent = "Carregando categorias...";
+
+            let categorias = await lerRegistros(
+                planilha.id,
+                "Categorias"
+            );
+
+            if (categorias.length === 0) {
+                await adicionarRegistros(
+                    planilha.id,
+                    "Categorias",
+                    CATEGORIAS_INICIAIS
+                );
+
+                categorias = await lerRegistros(
+                    planilha.id,
+                    "Categorias"
+                );
+            }
 
             linkPlanilha.href = planilha.url;
             linkPlanilha.hidden = false;

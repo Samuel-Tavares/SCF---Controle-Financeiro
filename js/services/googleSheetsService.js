@@ -149,3 +149,133 @@ export async function prepararPlanilha() {
         criadaAgora: existente === null
     };
 }
+
+function obterEstruturaAba(nomeAba) {
+    const colunas = ESTRUTURA_PLANILHA[nomeAba];
+
+    if (!Array.isArray(colunas)) {
+        throw new Error(`Aba desconhecida: ${nomeAba}.`);
+    }
+
+    const ultimaColuna = String.fromCharCode(
+        65 + colunas.length - 1
+    );
+
+    return {
+        colunas,
+        intervalo: `'${nomeAba}'!A:${ultimaColuna}`
+    };
+}
+
+export async function lerRegistros(planilhaId, nomeAba) {
+    const { colunas, intervalo } = obterEstruturaAba(nomeAba);
+
+    const parametros = new URLSearchParams({
+        majorDimension: "ROWS",
+        valueRenderOption: "UNFORMATTED_VALUE"
+    });
+
+    const url =
+        "https://sheets.googleapis.com/v4/spreadsheets/"
+        + `${encodeURIComponent(planilhaId)}/values/`
+        + `${encodeURIComponent(intervalo)}?${parametros}`;
+
+    const resultado = await requisicaoGoogle(url);
+
+    const linhas = resultado.values ?? [];
+    const cabecalho = linhas[0] ?? [];
+
+    const cabecalhoValido =
+        cabecalho.length === colunas.length
+        && colunas.every(
+            (coluna, indice) => cabecalho[indice] === coluna
+        );
+
+    if (!cabecalhoValido) {
+        throw new Error(
+            `Os cabeçalhos da aba ${nomeAba} não correspondem à estrutura esperada.`
+        );
+    }
+
+    return linhas
+        .slice(1)
+        .filter((linha) =>
+            linha.some((valor) => valor !== "" && valor != null)
+        )
+        .map((linha) => {
+            const registro = Object.fromEntries(
+                colunas.map((coluna, indice) => [
+                    coluna,
+                    linha[indice] ?? ""
+                ])
+            );
+
+            if (
+                typeof registro.id !== "string"
+                || registro.id.trim() === ""
+            ) {
+                throw new Error(
+                    `Existe um registro sem ID válido na aba ${nomeAba}.`
+                );
+            }
+
+            return registro;
+        });
+}
+
+export async function adicionarRegistros(
+    planilhaId,
+    nomeAba,
+    registros
+) {
+    if (!Array.isArray(registros) || registros.length === 0) {
+        throw new Error("Informe os registros que serão adicionados.");
+    }
+
+    const { colunas, intervalo } = obterEstruturaAba(nomeAba);
+
+    const existentes = await lerRegistros(planilhaId, nomeAba);
+
+    const ids = new Set(
+        existentes.map((registro) => registro.id)
+    );
+
+    for (const registro of registros) {
+        if (
+            typeof registro.id !== "string"
+            || registro.id.trim() === ""
+        ) {
+            throw new Error("Todo registro precisa ter um ID válido.");
+        }
+
+        if (ids.has(registro.id)) {
+            throw new Error(
+                `Já existe um registro com o ID ${registro.id} na aba ${nomeAba}.`
+            );
+        }
+
+        ids.add(registro.id);
+    }
+
+    const valores = registros.map((registro) =>
+        colunas.map((coluna) => registro[coluna] ?? "")
+    );
+
+    const parametros = new URLSearchParams({
+        valueInputOption: "RAW",
+        insertDataOption: "INSERT_ROWS"
+    });
+
+    const url =
+        "https://sheets.googleapis.com/v4/spreadsheets/"
+        + `${encodeURIComponent(planilhaId)}/values/`
+        + `${encodeURIComponent(intervalo)}:append?${parametros}`;
+
+    return requisicaoGoogle(url, {
+        method: "POST",
+        body: JSON.stringify({
+            majorDimension: "ROWS",
+            values: valores
+        })
+    });
+}
