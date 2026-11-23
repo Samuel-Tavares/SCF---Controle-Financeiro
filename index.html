@@ -25,7 +25,7 @@
                 </nav>
             </div>
 
-            <p class="sidebar-note"><span aria-hidden="true"></span> Dados neste navegador</p>
+            <p class="sidebar-note"><span aria-hidden="true"></span> Armazenamento no Google Sheets</p>
         </aside>
 
         <div class="workspace">
@@ -49,7 +49,7 @@
                     <h2 id="titulo-conexao-google">Google Sheets</h2>
                 </div>
 
-                <p>Conecte sua conta para preparar o acesso à planilha.</p>
+                <p>Conecte sua conta para carregar e salvar seus dados na planilha.</p>
             </div>
 
             <div class="acoes-formulario">
@@ -62,7 +62,7 @@
                 id="mensagem-google"
                 class="mensagem-formulario"
                 aria-live="polite"
-            ></p>
+            >Conecte-se para carregar seus dados. Os novos registros serão salvos na planilha.</p>
 
             <a
                 id="abrir-planilha-google"
@@ -93,7 +93,7 @@
             </div>
         </section>
 
-        <section id="resumo-financeiro" aria-labelledby="titulo-resumo">
+        <section data-requer-conexao hidden id="resumo-financeiro" aria-labelledby="titulo-resumo">
             <div class="section-heading">
                 <div>
                     <p class="section-kicker">01 / Panorama</p>
@@ -105,6 +105,7 @@
                 </p>
             </div>
 
+            <p id="mensagem-resumo" class="mensagem-formulario" aria-live="polite"></p>
             <div class="resumo-cards">
                 <article class="resumo-card resumo-card-saldo" aria-labelledby="titulo-saldo">
                     <div class="resumo-card-cabecalho">
@@ -158,7 +159,7 @@
             </div>
         </section>
 
-        <section id="nova-transacao">
+        <section data-requer-conexao hidden id="nova-transacao">
             <div class="section-heading">
                 <div>
                     <p class="section-kicker">02 / Movimento</p>
@@ -245,7 +246,7 @@
             </form>
         </section>
 
-        <section id="orcamentos-mensais">
+        <section data-requer-conexao hidden id="orcamentos-mensais">
             <div class="section-heading">
                 <div>
                     <p class="section-kicker">03 / Planejamento</p>
@@ -324,7 +325,7 @@
             </div>
         </section>
 
-        <section id="orcamentos-categoria">
+        <section data-requer-conexao hidden id="orcamentos-categoria">
             <div class="section-heading">
                 <div>
                     <p class="section-kicker">04 / Prioridades</p>
@@ -405,7 +406,7 @@
             </div>
         </section>
 
-        <section id="historico-transacoes">
+        <section data-requer-conexao hidden id="historico-transacoes">
             <div class="section-heading">
                 <div>
                     <p class="section-kicker">05 / Registro</p>

@@ -1,86 +1,48 @@
-import { conectarGoogle } from "../services/googleAuthService.js";
-import {
-    prepararPlanilha,
-    lerRegistros,
-    adicionarRegistros
-} from "../services/googleSheetsService.js";
-
-import {
-    CATEGORIAS_INICIAIS
-} from "../services/financeiroService.js";
-
-import {
-    exibirMensagem,
-    limparMensagem
-} from "../views/mensagemView.js";
+import { GOOGLE_CONFIG } from "../config/googleConfig.js";
+import { conectarGoogle, obterTokenGoogle } from "../services/googleAuthService.js";
+import { criarClienteGoogle } from "../services/googleApiService.js";
+import { prepararPlanilha } from "../services/googleSheetsService.js";
+import { conectarGoogleSheets, desconectarGoogleSheets } from "../repositories/googleSheetsRepository.js";
+import { inicializarCategorias } from "../services/financeiroService.js";
+import { exibirMensagem, limparMensagem } from "../views/mensagemView.js";
+import { executarAcaoFinanceira } from "./operacaoController.js";
 
 const SELETOR_MENSAGEM = "#mensagem-google";
 
-export function inicializarGoogleController() {
+export function inicializarGoogleController(aoConectar) {
     const botao = document.querySelector("#conectar-google");
-    const linkPlanilha = document.querySelector(
-        "#abrir-planilha-google"
-    );
+    const link = document.querySelector("#abrir-planilha-google");
 
-    botao.addEventListener("click", async () => {
+    botao.addEventListener("click", () => executarAcaoFinanceira(SELETOR_MENSAGEM, async () => {
         limparMensagem(SELETOR_MENSAGEM);
-
-        linkPlanilha.hidden = true;
-        linkPlanilha.removeAttribute("href");
-
-        botao.disabled = true;
+        desconectarGoogleSheets();
+        document.querySelectorAll("[data-requer-conexao]").forEach((secao) => { secao.hidden = true; });
+        link.hidden = true;
+        link.removeAttribute("href");
         botao.textContent = "Conectando...";
-
         try {
             await conectarGoogle();
+            const requisicao = criarClienteGoogle({ obterToken: obterTokenGoogle });
+            botao.textContent = "Carregando planilha...";
+            const planilha = await prepararPlanilha({ requisicao, nomePlanilha: GOOGLE_CONFIG.spreadsheetTitle });
 
-            botao.textContent = "Preparando planilha...";
+            conectarGoogleSheets({ planilhaId: planilha.id, requisicao });
+            const resultado = await inicializarCategorias();
+            if (!resultado.sucesso) throw new Error(resultado.erros.join(" "));
 
-            const planilha = await prepararPlanilha();
-
-            botao.textContent = "Carregando categorias...";
-
-            let categorias = await lerRegistros(
-                planilha.id,
-                "Categorias"
-            );
-
-            if (categorias.length === 0) {
-                await adicionarRegistros(
-                    planilha.id,
-                    "Categorias",
-                    CATEGORIAS_INICIAIS
-                );
-
-                categorias = await lerRegistros(
-                    planilha.id,
-                    "Categorias"
-                );
-            }
-
-            linkPlanilha.href = planilha.url;
-            linkPlanilha.hidden = false;
-
-            const mensagem = planilha.criadaAgora
-                ? "Planilha criada com sucesso."
-                : "Planilha localizada com sucesso.";
-
-            exibirMensagem(
-                SELETOR_MENSAGEM,
-                `${mensagem} Os cadastros ainda estão sendo salvos neste navegador.`,
-                "sucesso"
-            );
-
-            botao.textContent = "Reconectar ao Google";
+            const carregou = await aoConectar({ categorias: resultado.categorias });
+            link.href = planilha.url;
+            link.hidden = false;
+            document.querySelectorAll("[data-requer-conexao]").forEach((secao) => { secao.hidden = false; });
+            exibirMensagem(SELETOR_MENSAGEM, carregou
+                ? "Conectado. Transações, categorias e orçamentos são lidos e salvos no Google Sheets."
+                : "Conectado, mas alguns dados não puderam ser carregados. Confira os avisos e reconecte para tentar novamente.",
+            carregou ? "sucesso" : "erro");
+            botao.textContent = "Reconectar / atualizar dados";
         } catch (erro) {
-            exibirMensagem(
-                SELETOR_MENSAGEM,
-                erro.message
-            );
-
+            desconectarGoogleSheets();
             botao.textContent = "Conectar ao Google Sheets";
-        } finally {
-            botao.disabled = false;
+            throw erro;
         }
-    });
+    }));
 }

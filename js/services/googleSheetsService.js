@@ -1,38 +1,6 @@
-import { GOOGLE_CONFIG } from "../config/googleConfig.js";
-import { requisicaoGoogle } from "./googleApiService.js";
 
-export const ESTRUTURA_PLANILHA = {
-    Transacoes: [
-        "id",
-        "tipo",
-        "recorrencia",
-        "essencialidade",
-        "descricao",
-        "valor",
-        "categoria",
-        "data",
-        "observacao"
-    ],
-
-    OrcamentosMensais: [
-        "id",
-        "mes",
-        "valorLimite"
-    ],
-
-    OrcamentosCategoria: [
-        "id",
-        "categoria",
-        "mes",
-        "valorLimite"
-    ],
-
-    Categorias: [
-        "id",
-        "nome",
-        "tipoRelacionado"
-    ]
-};
+import { ESTRUTURA_PLANILHA } from "../repositories/googleSheetsSchema.js";
+import { CATEGORIAS_INICIAIS } from "../config/categoriasIniciais.js";
 
 function escaparConsulta(valor) {
     return valor
@@ -40,9 +8,9 @@ function escaparConsulta(valor) {
         .replace(/'/g, "\\'");
 }
 
-async function buscarPlanilha() {
+async function buscarPlanilha(requisicaoGoogle, nomePlanilha) {
     const nome = escaparConsulta(
-        GOOGLE_CONFIG.spreadsheetTitle
+        nomePlanilha
     );
 
     const parametros = new URLSearchParams({
@@ -87,7 +55,7 @@ async function buscarPlanilha() {
     return arquivos[0] ?? null;
 }
 
-async function criarPlanilha() {
+async function criarPlanilha(requisicaoGoogle, nomePlanilha) {
     const abas = Object.entries(ESTRUTURA_PLANILHA).map(
         ([nome, colunas]) => ({
             properties: {
@@ -111,7 +79,11 @@ async function criarPlanilha() {
                             }
                         }
                     }))
-                }]
+                }, ...(nome === "Categorias" ? CATEGORIAS_INICIAIS.map((categoria) => ({
+                    values: colunas.map((coluna) => ({
+                        userEnteredValue: { stringValue: categoria[coluna] }
+                    }))
+                })) : [])]
             }]
         })
     );
@@ -122,7 +94,7 @@ async function criarPlanilha() {
             method: "POST",
             body: JSON.stringify({
                 properties: {
-                    title: GOOGLE_CONFIG.spreadsheetTitle,
+                    title: nomePlanilha,
                     locale: "pt_BR",
                     timeZone: "America/Sao_Paulo"
                 },
@@ -137,10 +109,10 @@ async function criarPlanilha() {
     };
 }
 
-export async function prepararPlanilha() {
-    const existente = await buscarPlanilha();
+export async function prepararPlanilha({ requisicao, nomePlanilha }) {
+    const existente = await buscarPlanilha(requisicao, nomePlanilha);
 
-    const planilha = existente ?? await criarPlanilha();
+    const planilha = existente ?? await criarPlanilha(requisicao, nomePlanilha);
 
     return {
         id: planilha.id,
@@ -148,134 +120,4 @@ export async function prepararPlanilha() {
         url: `https://docs.google.com/spreadsheets/d/${encodeURIComponent(planilha.id)}/edit`,
         criadaAgora: existente === null
     };
-}
-
-function obterEstruturaAba(nomeAba) {
-    const colunas = ESTRUTURA_PLANILHA[nomeAba];
-
-    if (!Array.isArray(colunas)) {
-        throw new Error(`Aba desconhecida: ${nomeAba}.`);
-    }
-
-    const ultimaColuna = String.fromCharCode(
-        65 + colunas.length - 1
-    );
-
-    return {
-        colunas,
-        intervalo: `'${nomeAba}'!A:${ultimaColuna}`
-    };
-}
-
-export async function lerRegistros(planilhaId, nomeAba) {
-    const { colunas, intervalo } = obterEstruturaAba(nomeAba);
-
-    const parametros = new URLSearchParams({
-        majorDimension: "ROWS",
-        valueRenderOption: "UNFORMATTED_VALUE"
-    });
-
-    const url =
-        "https://sheets.googleapis.com/v4/spreadsheets/"
-        + `${encodeURIComponent(planilhaId)}/values/`
-        + `${encodeURIComponent(intervalo)}?${parametros}`;
-
-    const resultado = await requisicaoGoogle(url);
-
-    const linhas = resultado.values ?? [];
-    const cabecalho = linhas[0] ?? [];
-
-    const cabecalhoValido =
-        cabecalho.length === colunas.length
-        && colunas.every(
-            (coluna, indice) => cabecalho[indice] === coluna
-        );
-
-    if (!cabecalhoValido) {
-        throw new Error(
-            `Os cabeçalhos da aba ${nomeAba} não correspondem à estrutura esperada.`
-        );
-    }
-
-    return linhas
-        .slice(1)
-        .filter((linha) =>
-            linha.some((valor) => valor !== "" && valor != null)
-        )
-        .map((linha) => {
-            const registro = Object.fromEntries(
-                colunas.map((coluna, indice) => [
-                    coluna,
-                    linha[indice] ?? ""
-                ])
-            );
-
-            if (
-                typeof registro.id !== "string"
-                || registro.id.trim() === ""
-            ) {
-                throw new Error(
-                    `Existe um registro sem ID válido na aba ${nomeAba}.`
-                );
-            }
-
-            return registro;
-        });
-}
-
-export async function adicionarRegistros(
-    planilhaId,
-    nomeAba,
-    registros
-) {
-    if (!Array.isArray(registros) || registros.length === 0) {
-        throw new Error("Informe os registros que serão adicionados.");
-    }
-
-    const { colunas, intervalo } = obterEstruturaAba(nomeAba);
-
-    const existentes = await lerRegistros(planilhaId, nomeAba);
-
-    const ids = new Set(
-        existentes.map((registro) => registro.id)
-    );
-
-    for (const registro of registros) {
-        if (
-            typeof registro.id !== "string"
-            || registro.id.trim() === ""
-        ) {
-            throw new Error("Todo registro precisa ter um ID válido.");
-        }
-
-        if (ids.has(registro.id)) {
-            throw new Error(
-                `Já existe um registro com o ID ${registro.id} na aba ${nomeAba}.`
-            );
-        }
-
-        ids.add(registro.id);
-    }
-
-    const valores = registros.map((registro) =>
-        colunas.map((coluna) => registro[coluna] ?? "")
-    );
-
-    const parametros = new URLSearchParams({
-        valueInputOption: "RAW",
-        insertDataOption: "INSERT_ROWS"
-    });
-
-    const url =
-        "https://sheets.googleapis.com/v4/spreadsheets/"
-        + `${encodeURIComponent(planilhaId)}/values/`
-        + `${encodeURIComponent(intervalo)}:append?${parametros}`;
-
-    return requisicaoGoogle(url, {
-        method: "POST",
-        body: JSON.stringify({
-            majorDimension: "ROWS",
-            values: valores
-        })
-    });
 }

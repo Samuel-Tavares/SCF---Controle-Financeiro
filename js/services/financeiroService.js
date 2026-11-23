@@ -1,108 +1,25 @@
 import { validarTransacao } from "../utils/validarTransacao.js";
-import Transacao from "../models/Transacao.js";
-import {
-    salvarTransacao,
-    carregarTransacoes,
-    removerTransacao as removerTransacaoRepository,
-    atualizarTransacao as atualizarTransacaoRepository
-} from "../repositories/transacaoRepository.js";
-
-import ResumoFinanceiro from "../models/ResumoFinanceiro.js";
-import OrcamentoCategoria from "../models/OrcamentoCategoria.js"
+import * as repositorio from "../repositories/googleSheetsRepository.js";
 import { validarOrcamentoCategoria } from "../utils/validarOrcamentoCategoria.js"
-import {
-    carregarOrcamentos,
-    salvarOrcamento,
-    removerOrcamento as removerOrcamentoRepository,
-    atualizarOrcamento as atualizarOrcamentoRepository
-} from "../repositories/orcamentoCategoriaRepository.js";
-
-import Categoria from "../models/Categoria.js";
 
 import {
     validarCategoria
 } from "../utils/validarCategoria.js";
 
 import {
-    carregarCategorias,
-    salvarCategoria,
-    atualizarCategoria as atualizarCategoriaRepository,
-    removerCategoria as removerCategoriaRepository,
-    buscarCategoriaPorId
-} from "../repositories/categoriaRepository.js";
-
-import OrcamentoMensal from "../models/OrcamentoMensal.js";
-
-import {
     validarOrcamentoMensal
 } from "../utils/validarOrcamentoMensal.js";
-
-import {
-    carregarOrcamentosMensais,
-    salvarOrcamentoMensal,
-    atualizarOrcamentoMensal as atualizarOrcamentoMensalRepository,
-    removerOrcamentoMensal as removerOrcamentoMensalRepository
-} from "../repositories/orcamentoMensalRepository.js";
 
 import { tratarErros } from "../utils/tratarErros.js";
 import { obterMesAtual, pertenceAoMes } from "../utils/periodo.js";
 
-export const CATEGORIAS_INICIAIS = [
-    {
-        id: "alimentacao",
-        nome: "Alimentação",
-        tipoRelacionado: "despesa"
-    },
-    {
-        id: "educacao",
-        nome: "Educação",
-        tipoRelacionado: "despesa"
-    },
-    {
-        id: "lazer",
-        nome: "Lazer",
-        tipoRelacionado: "despesa"
-    },
-    {
-        id: "moradia",
-        nome: "Moradia",
-        tipoRelacionado: "despesa"
-    },
-    {
-        id: "saude",
-        nome: "Saúde",
-        tipoRelacionado: "despesa"
-    },
-    {
-        id: "transporte",
-        nome: "Transporte",
-        tipoRelacionado: "despesa"
-    },
-    {
-        id: "salario",
-        nome: "Salário",
-        tipoRelacionado: "receita"
-    },
-    {
-        id: "investimentos",
-        nome: "Investimentos",
-        tipoRelacionado: "receita"
-    },
-    {
-        id: "outros-despesa",
-        nome: "Outros",
-        tipoRelacionado: "despesa"
-    },
-    {
-        id: "outros-receita",
-        nome: "Outros",
-        tipoRelacionado: "receita"
-    }
-];
+import { CATEGORIAS_INICIAIS } from "../config/categoriasIniciais.js";
+export { CATEGORIAS_INICIAIS };
 
-export function inicializarCategorias() {
+
+export async function inicializarCategorias() {
     try {
-        const categoriasExistentes = carregarCategorias();
+        const categoriasExistentes = await repositorio.listar("categorias");
 
         if (categoriasExistentes.length > 0) {
             return {
@@ -112,15 +29,12 @@ export function inicializarCategorias() {
             };
         }
 
-        const categoriasSalvas = CATEGORIAS_INICIAIS.map(
-            (dadosCategoria) => {
-                const categoria = new Categoria(
-                    dadosCategoria
-                );
+        const categoriasSalvas = [];
 
-                return salvarCategoria(categoria);
-            }
-        );
+        for (const dadosCategoria of CATEGORIAS_INICIAIS) {
+            categoriasSalvas.push(await repositorio.criar("categorias", { ...dadosCategoria }));
+        }
+
 
         return {
             sucesso: true,
@@ -136,9 +50,9 @@ export function inicializarCategorias() {
     }
 }
 
-export function cadastrarTransacao(dados) {
+export async function cadastrarTransacao(dados) {
     try {
-        const categoria = buscarCategoriaPorId(
+        const categoria = await repositorio.buscarPorId("categorias",
             dados.categoria
         );
 
@@ -152,12 +66,12 @@ export function cadastrarTransacao(dados) {
             };
         }
 
-        const transacao = new Transacao({
+        const transacao = {
             ...dados,
             id: crypto.randomUUID()
-        });
+        };
 
-        const transacaoSalva = salvarTransacao(transacao);
+        const transacaoSalva = await repositorio.criar("transacoes", transacao);
 
         return {
             sucesso: true,
@@ -173,9 +87,9 @@ export function cadastrarTransacao(dados) {
     }
 }
 
-export function excluirTransacao(id) {
+export async function excluirTransacao(id) {
     try {
-        const transacaoRemovida = removerTransacaoRepository(id);
+        const transacaoRemovida = await repositorio.excluir("transacoes", id);
 
         return {
             sucesso: true,
@@ -191,9 +105,9 @@ export function excluirTransacao(id) {
     }
 }
 
-export function editarTransacao(id, dados) {
+export async function editarTransacao(id, dados) {
     try {
-        const categoria = buscarCategoriaPorId(
+        const categoria = await repositorio.buscarPorId("categorias",
             dados.categoria
         );
 
@@ -210,12 +124,12 @@ export function editarTransacao(id, dados) {
             };
         }
 
-        const transacaoAtualizada = new Transacao({
+        const transacaoAtualizada = {
             ...dados,
             id
-        });
+        };
 
-        const transacaoSalva = atualizarTransacaoRepository(
+        const transacaoSalva = await repositorio.atualizar("transacoes",
             transacaoAtualizada
         );
 
@@ -240,9 +154,12 @@ export function calcularSaldo(
     return (receitasEmCentavos - despesasEmCentavos) / 100;
 }
 
-export function calcularResumo(mesReferencia = obterMesAtual()) {
+export async function calcularResumo(mesReferencia = obterMesAtual()) {
     try {
-        const transacoes = carregarTransacoes().filter(
+        const [todasTransacoes, orcamentosMensais] = await Promise.all([
+            repositorio.listar("transacoes"), repositorio.listar("orcamentosMensais")
+        ]);
+        const transacoes = todasTransacoes.filter(
             (transacao) => pertenceAoMes(transacao.data, mesReferencia)
         );
 
@@ -275,17 +192,17 @@ export function calcularResumo(mesReferencia = obterMesAtual()) {
             (receitasEmCentavos - despesasEmCentavos) / receitasEmCentavos) * 100
             : 0;
 
-        const orcamentoDoMes = carregarOrcamentosMensais().find(
+        const orcamentoDoMes = orcamentosMensais.find(
             (orcamento) => orcamento.mes === mesReferencia
         );
 
-        const resumo = new ResumoFinanceiro({
+        const resumo = {
             totalReceitas,
             totalDespesas,
             saldo,
             taxaEconomia,
             orcamentoMensal: orcamentoDoMes?.valorLimite ?? null
-        });
+        };
 
         return {
             sucesso: true,
@@ -301,9 +218,9 @@ export function calcularResumo(mesReferencia = obterMesAtual()) {
     }
 }
 
-export function cadastrarOrcamentoCategoria(dados) {
+export async function cadastrarOrcamentoCategoria(dados) {
     try {
-        const categoria = buscarCategoriaPorId(
+        const categoria = await repositorio.buscarPorId("categorias",
             dados.categoria
         );
 
@@ -320,7 +237,7 @@ export function cadastrarOrcamentoCategoria(dados) {
             };
         }
 
-        const orcamentos = carregarOrcamentos();
+        const orcamentos = await repositorio.listar("orcamentosCategoria");
 
         const orcamentoExistente = orcamentos.some(
             (orcamento) =>
@@ -338,12 +255,12 @@ export function cadastrarOrcamentoCategoria(dados) {
             };
         }
 
-        const orcamento = new OrcamentoCategoria({
+        const orcamento = {
             ...dados,
             id: crypto.randomUUID()
-        });
+        };
 
-        const orcamentoSalvo = salvarOrcamento(
+        const orcamentoSalvo = await repositorio.criar("orcamentosCategoria",
             orcamento
         );
 
@@ -377,13 +294,14 @@ export function calcularOrcamentos(valorLimite, despesas) {
     };
 }
 
-export function listarOrcamentosCategoria(mesReferencia = obterMesAtual()) {
+export async function listarOrcamentosCategoria(mesReferencia = obterMesAtual()) {
     try {
-        const orcamentos = carregarOrcamentos().filter(
+        const [todosOrcamentos, transacoes, categorias] = await Promise.all([
+            repositorio.listar("orcamentosCategoria"), repositorio.listar("transacoes"), repositorio.listar("categorias")
+        ]);
+        const orcamentos = todosOrcamentos.filter(
             (orcamento) => orcamento.mes === mesReferencia
         );
-        const transacoes = carregarTransacoes();
-        const categorias = carregarCategorias();
 
         const orcamentosCalculados = orcamentos.map(
             (orcamento) => {
@@ -430,9 +348,9 @@ export function listarOrcamentosCategoria(mesReferencia = obterMesAtual()) {
     }
 }
 
-export function excluirOrcamentoCategoria(id) {
+export async function excluirOrcamentoCategoria(id) {
     try {
-        const orcamentoRemovido = removerOrcamentoRepository(id);
+        const orcamentoRemovido = await repositorio.excluir("orcamentosCategoria", id);
 
         return {
             sucesso: true,
@@ -448,9 +366,9 @@ export function excluirOrcamentoCategoria(id) {
     }
 }
 
-export function editarOrcamentoCategoria(id, dados) {
+export async function editarOrcamentoCategoria(id, dados) {
     try {
-        const categoria = buscarCategoriaPorId(
+        const categoria = await repositorio.buscarPorId("categorias",
             dados.categoria
         );
 
@@ -467,7 +385,7 @@ export function editarOrcamentoCategoria(id, dados) {
             };
         }
 
-        const orcamentos = carregarOrcamentos();
+        const orcamentos = await repositorio.listar("orcamentosCategoria");
 
         const orcamentoDuplicado = orcamentos.some(
             (orcamento) =>
@@ -486,12 +404,12 @@ export function editarOrcamentoCategoria(id, dados) {
             };
         }
 
-        const orcamentoAtualizado = new OrcamentoCategoria({
+        const orcamentoAtualizado = {
             ...dados,
             id
-        });
+        };
 
-        const orcamentoSalvo = atualizarOrcamentoRepository(
+        const orcamentoSalvo = await repositorio.atualizar("orcamentosCategoria",
             orcamentoAtualizado
         );
 
@@ -524,18 +442,17 @@ export function ordenar(transacoes) {
     );
 }
 
-export function filtrarTransacoes({
+export async function filtrarTransacoes({
     tipo = "",
     categoria = "",
     mesReferencia = obterMesAtual(),
     descricao = ""
 } = {}) {
     try {
-        const transacoes = pesquisarPorDescricao(
-            carregarTransacoes(),
-            descricao
-        );
-        const categorias = carregarCategorias();
+        const [todasTransacoes, categorias] = await Promise.all([
+            repositorio.listar("transacoes"), repositorio.listar("categorias")
+        ]);
+        const transacoes = pesquisarPorDescricao(todasTransacoes, descricao);
 
         const transacoesFiltradas = transacoes
             .filter((transacao) => {
@@ -614,9 +531,9 @@ export function paginarTransacoes(
     };
 }
 
-export function listarCategorias() {
+export async function listarCategorias() {
     try {
-        const categorias = carregarCategorias();
+        const categorias = await repositorio.listar("categorias");
 
         return {
             sucesso: true,
@@ -632,7 +549,7 @@ export function listarCategorias() {
     }
 }
 
-export function cadastrarCategoria(dados) {
+export async function cadastrarCategoria(dados) {
     const dadosNormalizados = {
         ...dados,
         nome: typeof dados.nome === "string"
@@ -651,7 +568,7 @@ export function cadastrarCategoria(dados) {
     }
 
     try {
-        const categorias = carregarCategorias();
+        const categorias = await repositorio.listar("categorias");
 
         const categoriaDuplicada = categorias.some(
             (categoria) =>
@@ -671,12 +588,12 @@ export function cadastrarCategoria(dados) {
             };
         }
 
-        const categoria = new Categoria({
+        const categoria = {
             ...dadosNormalizados,
             id: crypto.randomUUID()
-        });
+        };
 
-        const categoriaSalva = salvarCategoria(categoria);
+        const categoriaSalva = await repositorio.criar("categorias", categoria);
 
         return {
             sucesso: true,
@@ -693,7 +610,7 @@ export function cadastrarCategoria(dados) {
 
 }
 
-export function editarCategoria(id, dados) {
+export async function editarCategoria(id, dados) {
     const dadosNormalizados = {
         ...dados,
         nome: typeof dados.nome === "string"
@@ -712,7 +629,7 @@ export function editarCategoria(id, dados) {
     }
 
     try {
-        const categorias = carregarCategorias();
+        const categorias = await repositorio.listar("categorias");
 
         const categoriaDuplicada = categorias.some(
             (categoria) =>
@@ -733,12 +650,12 @@ export function editarCategoria(id, dados) {
             };
         }
 
-        const categoriaAtualizada = new Categoria({
+        const categoriaAtualizada = {
             ...dadosNormalizados,
             id
-        });
+        };
 
-        const categoriaSalva = atualizarCategoriaRepository(categoriaAtualizada);
+        const categoriaSalva = await repositorio.atualizar("categorias", categoriaAtualizada);
 
         return {
             sucesso: true,
@@ -754,9 +671,9 @@ export function editarCategoria(id, dados) {
     }
 }
 
-export function excluirCategoria(id) {
+export async function excluirCategoria(id) {
     try {
-        const categoria = buscarCategoriaPorId(id);
+        const categoria = await repositorio.buscarPorId("categorias", id);
 
         if (categoria === null) {
             return {
@@ -766,8 +683,8 @@ export function excluirCategoria(id) {
             };
         }
 
-        const transacoes = carregarTransacoes();
-        const orcamentos = carregarOrcamentos();
+        const transacoes = await repositorio.listar("transacoes");
+        const orcamentos = await repositorio.listar("orcamentosCategoria");
 
         const categoriaEstaEmUso =
             transacoes.some(
@@ -787,7 +704,7 @@ export function excluirCategoria(id) {
             };
         }
 
-        const categoriaRemovida = removerCategoriaRepository(id);
+        const categoriaRemovida = await repositorio.excluir("categorias", id);
 
         return {
             sucesso: true,
@@ -803,7 +720,7 @@ export function excluirCategoria(id) {
     }
 }
 
-export function cadastrarOrcamentoMensal(dados) {
+export async function cadastrarOrcamentoMensal(dados) {
     const erros = validarOrcamentoMensal(dados);
 
     if (erros.length > 0) {
@@ -815,7 +732,7 @@ export function cadastrarOrcamentoMensal(dados) {
     }
 
     try {
-        const orcamentos = carregarOrcamentosMensais();
+        const orcamentos = await repositorio.listar("orcamentosMensais");
 
         const orcamentoExistente = orcamentos.some(
             (orcamento) => orcamento.mes === dados.mes
@@ -829,13 +746,13 @@ export function cadastrarOrcamentoMensal(dados) {
             };
         }
 
-        const orcamento = new OrcamentoMensal({
+        const orcamento = {
             id: crypto.randomUUID(),
             mes: dados.mes,
             valorLimite: dados.valorLimite
-        });
+        };
 
-        const orcamentoSalvo = salvarOrcamentoMensal(orcamento);
+        const orcamentoSalvo = await repositorio.criar("orcamentosMensais", orcamento);
 
         return {
             sucesso: true,
@@ -851,13 +768,14 @@ export function cadastrarOrcamentoMensal(dados) {
     }
 }
 
-export function listarOrcamentosMensais(mesReferencia = obterMesAtual()) {
+export async function listarOrcamentosMensais(mesReferencia = obterMesAtual()) {
     try {
-        const orcamento = carregarOrcamentosMensais().filter(
+        const [todosOrcamentos, transacoes] = await Promise.all([
+            repositorio.listar("orcamentosMensais"), repositorio.listar("transacoes")
+        ]);
+        const orcamento = todosOrcamentos.filter(
             (orcamento) => orcamento.mes === mesReferencia
         );
-
-        const transacoes = carregarTransacoes();
 
         const orcamentosCalculados = orcamento.map(
             (orcamento) => {
@@ -873,11 +791,11 @@ export function listarOrcamentosMensais(mesReferencia = obterMesAtual()) {
                         despesasDoMes
                     );
 
-                return new OrcamentoMensal({
+                return {
                     ...orcamento,
                     valorUtilizado,
                     percentualAtingido
-                });
+                };
             }
         );
 
@@ -895,7 +813,7 @@ export function listarOrcamentosMensais(mesReferencia = obterMesAtual()) {
     }
 }
 
-export function editarOrcamentoMensal(id, dados) {
+export async function editarOrcamentoMensal(id, dados) {
     const erros = validarOrcamentoMensal(dados);
 
     if (erros.length > 0) {
@@ -907,7 +825,7 @@ export function editarOrcamentoMensal(id, dados) {
     }
 
     try {
-        const orcamentos = carregarOrcamentosMensais();
+        const orcamentos = await repositorio.listar("orcamentosMensais");
 
         const orcamentoDuplicado = orcamentos.some(
             (orcamento) =>
@@ -925,13 +843,13 @@ export function editarOrcamentoMensal(id, dados) {
             };
         }
 
-        const orcamentoAtualizado = new OrcamentoMensal({
+        const orcamentoAtualizado = {
             id,
             mes: dados.mes,
             valorLimite: dados.valorLimite
-        });
+        };
 
-        const orcamentoSalvo = atualizarOrcamentoMensalRepository(orcamentoAtualizado);
+        const orcamentoSalvo = await repositorio.atualizar("orcamentosMensais", orcamentoAtualizado);
 
         return {
             sucesso: true,
@@ -947,9 +865,9 @@ export function editarOrcamentoMensal(id, dados) {
     }
 }
 
-export function excluirOrcamentoMensal(id) {
+export async function excluirOrcamentoMensal(id) {
     try {
-        const orcamentoRemovido = removerOrcamentoMensalRepository(id);
+        const orcamentoRemovido = await repositorio.excluir("orcamentosMensais", id);
 
         return {
             sucesso: true,

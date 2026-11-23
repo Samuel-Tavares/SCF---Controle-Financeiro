@@ -1,9 +1,9 @@
+import { executarAcaoFinanceira, criarControleLeitura, exibirResultadoGravacao } from "./operacaoController.js";
 import {
     cadastrarOrcamentoCategoria,
     listarOrcamentosCategoria,
     editarOrcamentoCategoria,
-    excluirOrcamentoCategoria,
-    listarCategorias
+    excluirOrcamentoCategoria
 } from "../services/financeiroService.js";
 
 import {
@@ -23,12 +23,17 @@ import {
 import { obterMesSelecionado, observarPeriodo } from "../services/periodoService.js";
 import { formatarMesReferencia } from "../utils/formatadores.js";
 
+const iniciarLeitura = criarControleLeitura();
+
 let idOrcamentoEmEdicao = null;
 const SELETOR_MENSAGEM = "#mensagem-orcamento";
 
 
-export function atualizarListaOrcamentosCategoria() {
-    const resultado = listarOrcamentosCategoria(obterMesSelecionado());
+export async function atualizarListaOrcamentosCategoria() {
+    const aindaAtual = iniciarLeitura();
+    const resultado = await listarOrcamentosCategoria(obterMesSelecionado());
+
+    if (!aindaAtual()) return false;
 
     if (!resultado.sucesso) {
         exibirMensagem(
@@ -41,13 +46,14 @@ export function atualizarListaOrcamentosCategoria() {
             tratarEdicaoOrcamento,
             tratarExclusaoOrcamento);
 
-        return;
+        return false;
     }
 
     renderizarOrcamentosCategoria(
         resultado.orcamentos,
         tratarEdicaoOrcamento,
         tratarExclusaoOrcamento);
+    return true;
 }
 
 //DELETE
@@ -58,33 +64,31 @@ function tratarExclusaoOrcamento(id) {
         return;
     }
 
-    limparMensagem(SELETOR_MENSAGEM);
+    return executarAcaoFinanceira(SELETOR_MENSAGEM, async () => {
+        exibirMensagem(SELETOR_MENSAGEM, "Salvando alterações...", "sucesso");
 
-    const resultado = excluirOrcamentoCategoria(id);
+        const resultado = await excluirOrcamentoCategoria(id);
 
-    if (!resultado.sucesso) {
-        exibirMensagem(
-            SELETOR_MENSAGEM,
-            resultado.erros
-        );
-        return;
-    }
+        if (!resultado.sucesso) {
+            exibirMensagem(
+                SELETOR_MENSAGEM,
+                resultado.erros
+            );
+            return;
+        }
 
-    if (idOrcamentoEmEdicao === id) {
-        restaurarModoCadastroOrcamento();
-    }
+        if (idOrcamentoEmEdicao === id) {
+            restaurarModoCadastroOrcamento();
+        }
 
-    atualizarListaOrcamentosCategoria();
+        const atualizou = await atualizarListaOrcamentosCategoria();
 
-    exibirMensagem(
-        SELETOR_MENSAGEM,
-        "Orçamento excluído com sucesso",
-        "sucesso"
-    );
+        exibirResultadoGravacao(SELETOR_MENSAGEM, "Orçamento excluído com sucesso", atualizou);
+    });
 }
 
 //POST
-export function inicializarOrcamentoCategoriaController() {
+export function inicializarOrcamentoCategoriaController(categorias = []) {
     const formulario = document.querySelector(
         "#form-novo-orcamento"
     );
@@ -106,23 +110,7 @@ export function inicializarOrcamentoCategoriaController() {
         atualizarListaOrcamentosCategoria();
     });
 
-    const resultadoCategorias = listarCategorias();
-
-    if (!resultadoCategorias.sucesso) {
-        exibirMensagem(
-            SELETOR_MENSAGEM,
-            resultadoCategorias.erros
-        );
-
-        return;
-    }
-
-    const categoriasDeDespesa = resultadoCategorias.categorias
-        .filter((categoria) => categoria.tipoRelacionado === "despesa");
-
-    renderizarCategoriasOrcamento(categoriasDeDespesa);
-
-    atualizarListaOrcamentosCategoria();
+    recarregarCategoriasOrcamento(categorias);
 
     botaoCancelar.addEventListener("click", function () {
         restaurarModoCadastroOrcamento();
@@ -132,44 +120,42 @@ export function inicializarOrcamentoCategoriaController() {
     formulario.addEventListener("submit", function (evento) {
         evento.preventDefault();
 
-        limparMensagem(SELETOR_MENSAGEM);
+        return executarAcaoFinanceira(SELETOR_MENSAGEM, async () => {
+            exibirMensagem(SELETOR_MENSAGEM, "Salvando alterações...", "sucesso");
 
-        const estaEditando = idOrcamentoEmEdicao != null;
+            const estaEditando = idOrcamentoEmEdicao != null;
 
-        const orcamento = {
-            categoria: inputCategoria.value,
-            mes: inputMes.value,
-            valorLimite: Number(inputValorLimite.value)
-        };
+            const orcamento = {
+                categoria: inputCategoria.value,
+                mes: inputMes.value,
+                valorLimite: Number(inputValorLimite.value)
+            };
 
-        const resultado = estaEditando
-            ? editarOrcamentoCategoria(
-                idOrcamentoEmEdicao,
-                orcamento
-            )
-            : cadastrarOrcamentoCategoria(orcamento);
+            const resultado = estaEditando
+                ? await editarOrcamentoCategoria(
+                    idOrcamentoEmEdicao,
+                    orcamento
+                )
+                : await cadastrarOrcamentoCategoria(orcamento);
 
-        if(!resultado.sucesso) {
-            exibirMensagem(SELETOR_MENSAGEM, resultado.erros);
-            return;
-        }
+            if(!resultado.sucesso) {
+                exibirMensagem(SELETOR_MENSAGEM, resultado.erros);
+                return;
+            }
 
-        restaurarModoCadastroOrcamento();
-        atualizarListaOrcamentosCategoria();
+            restaurarModoCadastroOrcamento();
+            const atualizou = await atualizarListaOrcamentosCategoria();
 
-        let mensagemSucesso = estaEditando
-            ? "Orçamento atualizado com sucesso."
-            : "Orçamento cadastrado com sucesso."
+            let mensagemSucesso = estaEditando
+                ? "Orçamento atualizado com sucesso."
+                : "Orçamento cadastrado com sucesso."
 
-        if (orcamento.mes !== obterMesSelecionado()) {
-            mensagemSucesso += ` Selecione ${formatarMesReferencia(orcamento.mes)} na visualização para consultá-lo.`;
-        }
+            if (orcamento.mes !== obterMesSelecionado()) {
+                mensagemSucesso += ` Selecione ${formatarMesReferencia(orcamento.mes)} na visualização para consultá-lo.`;
+            }
 
-        exibirMensagem(
-            SELETOR_MENSAGEM,
-            mensagemSucesso,
-            "sucesso"
-        );
+            exibirResultadoGravacao(SELETOR_MENSAGEM, mensagemSucesso, atualizou);
+        });
     })
 }
 
@@ -212,4 +198,10 @@ function restaurarModoCadastroOrcamento() {
     document.querySelector("#orcamento-categoria-mes").value = obterMesSelecionado();
     botaoEnviar.textContent = "Cadastrar orçamento";
     botaoCancelar.hidden = true;
+}
+
+export function recarregarCategoriasOrcamento(categorias) {
+    const selecionada = document.querySelector("#orcamento-categoria").value;
+    renderizarCategoriasOrcamento(categorias.filter((categoria) => categoria.tipoRelacionado === "despesa"));
+    document.querySelector("#orcamento-categoria").value = selecionada;
 }

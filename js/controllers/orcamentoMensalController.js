@@ -1,3 +1,4 @@
+import { executarAcaoFinanceira, criarControleLeitura, exibirResultadoGravacao } from "./operacaoController.js";
 import {
     cadastrarOrcamentoMensal,
     listarOrcamentosMensais,
@@ -19,12 +20,17 @@ import { obterMesSelecionado, observarPeriodo } from "../services/periodoService
 import { formatarMesReferencia } from "../utils/formatadores.js";
 import { atualizarResumoFinanceiro } from "./resumoController.js";
 
+const iniciarLeitura = criarControleLeitura();
+
 let idOrcamentoMensalEmEdicao = null;
 
 const SELETOR_MENSAGEM = "#mensagem-orcamento-mensal";
 
-export function atualizarListaOrcamentosMensais() {
-    const resultado = listarOrcamentosMensais(obterMesSelecionado());
+export async function atualizarListaOrcamentosMensais() {
+    const aindaAtual = iniciarLeitura();
+    const resultado = await listarOrcamentosMensais(obterMesSelecionado());
+
+    if (!aindaAtual()) return false;
 
     if (!resultado.sucesso) {
         exibirMensagem(
@@ -38,7 +44,7 @@ export function atualizarListaOrcamentosMensais() {
             tratarExclusaoOrcamentoMensal
         );
 
-        return;
+        return false;
     }
 
     renderizarOrcamentosMensais(
@@ -46,6 +52,7 @@ export function atualizarListaOrcamentosMensais() {
         tratarEdicaoOrcamentoMensal,
         tratarExclusaoOrcamentoMensal
     );
+    return true;
 }
 
 function restaurarModoCadastroOrcamentoMensal() {
@@ -109,31 +116,28 @@ function tratarExclusaoOrcamentoMensal(id) {
         return;
     }
 
-    limparMensagem(SELETOR_MENSAGEM);
+    return executarAcaoFinanceira(SELETOR_MENSAGEM, async () => {
+        exibirMensagem(SELETOR_MENSAGEM, "Salvando alterações...", "sucesso");
 
-    const resultado = excluirOrcamentoMensal(id);
+        const resultado = await excluirOrcamentoMensal(id);
 
-    if (!resultado.sucesso) {
-        exibirMensagem(
-            SELETOR_MENSAGEM,
-        resultado.erros
-        );
+        if (!resultado.sucesso) {
+            exibirMensagem(
+                SELETOR_MENSAGEM,
+                resultado.erros
+            );
 
-        return;
-    }
+            return;
+        }
 
-    if (idOrcamentoMensalEmEdicao === id) {
-        restaurarModoCadastroOrcamentoMensal();
-    }
+        if (idOrcamentoMensalEmEdicao === id) {
+            restaurarModoCadastroOrcamentoMensal();
+        }
 
-    atualizarListaOrcamentosMensais();
-    atualizarResumoFinanceiro();
+        const atualizou = (await Promise.all([atualizarListaOrcamentosMensais(), atualizarResumoFinanceiro()])).every(Boolean);
 
-    exibirMensagem(
-        SELETOR_MENSAGEM,
-        "Orçamento mensal excluído com sucesso.",
-        "sucesso"
-    );
+        exibirResultadoGravacao(SELETOR_MENSAGEM, "Orçamento mensal excluído com sucesso.", atualizou);
+    });
 }
 
 
@@ -160,8 +164,6 @@ export function inicializarOrcamentoMensalController() {
         "#cancelar-edicao-orcamento-mensal"
     );
 
-    atualizarListaOrcamentosMensais();
-
     botaoCancelar.addEventListener(
         "click",
         function () {
@@ -175,51 +177,48 @@ export function inicializarOrcamentoMensalController() {
         function (evento) {
             evento.preventDefault();
 
-            limparMensagem(SELETOR_MENSAGEM);
+            return executarAcaoFinanceira(SELETOR_MENSAGEM, async () => {
+                exibirMensagem(SELETOR_MENSAGEM, "Salvando alterações...", "sucesso");
 
-            const estaEditando =
-                idOrcamentoMensalEmEdicao !== null;
+                const estaEditando =
+                    idOrcamentoMensalEmEdicao !== null;
 
-            const orcamento = {
-                mes: inputMes.value,
-                valorLimite: Number(
-                    inputValorLimite.value
-                )
-            };
+                const orcamento = {
+                    mes: inputMes.value,
+                    valorLimite: Number(
+                        inputValorLimite.value
+                    )
+                };
 
-            const resultado = estaEditando
-                ? editarOrcamentoMensal(
-                    idOrcamentoMensalEmEdicao,
-                    orcamento
-                )
-                : cadastrarOrcamentoMensal(orcamento);
+                const resultado = estaEditando
+                    ? await editarOrcamentoMensal(
+                        idOrcamentoMensalEmEdicao,
+                        orcamento
+                    )
+                    : await cadastrarOrcamentoMensal(orcamento);
 
-            if (!resultado.sucesso) {
-                exibirMensagem(
-                    SELETOR_MENSAGEM,
-                    resultado.erros
-                );
+                if (!resultado.sucesso) {
+                    exibirMensagem(
+                        SELETOR_MENSAGEM,
+                        resultado.erros
+                    );
 
-                return;
-            }
+                    return;
+                }
 
-            restaurarModoCadastroOrcamentoMensal();
-            atualizarListaOrcamentosMensais();
-            atualizarResumoFinanceiro();
+                restaurarModoCadastroOrcamentoMensal();
+                const atualizou = (await Promise.all([atualizarListaOrcamentosMensais(), atualizarResumoFinanceiro()])).every(Boolean);
 
-            let mensagem = estaEditando
-                ? "Orçamento mensal atualizado com sucesso."
-                : "Orçamento mensal cadastrado com sucesso.";
+                let mensagem = estaEditando
+                    ? "Orçamento mensal atualizado com sucesso."
+                    : "Orçamento mensal cadastrado com sucesso.";
 
-            if (orcamento.mes !== obterMesSelecionado()) {
-                mensagem += ` Selecione ${formatarMesReferencia(orcamento.mes)} na visualização para consultá-lo.`;
-            }
+                if (orcamento.mes !== obterMesSelecionado()) {
+                    mensagem += ` Selecione ${formatarMesReferencia(orcamento.mes)} na visualização para consultá-lo.`;
+                }
 
-            exibirMensagem(
-                SELETOR_MENSAGEM,
-                mensagem,
-                "sucesso"
-            );
+                exibirResultadoGravacao(SELETOR_MENSAGEM, mensagem, atualizou);
+            });
         }
     );
 }

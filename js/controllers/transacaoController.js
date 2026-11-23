@@ -1,10 +1,10 @@
+import { executarAcaoFinanceira, criarControleLeitura, exibirResultadoGravacao } from "./operacaoController.js";
 import {
     cadastrarTransacao,
     editarTransacao,
     excluirTransacao,
     filtrarTransacoes,
-    paginarTransacoes,
-    listarCategorias
+    paginarTransacoes
 } from "../services/financeiroService.js";
 
 import {
@@ -34,6 +34,8 @@ import {
 } from "../views/categoriaView.js";
 
 import { obterMesSelecionado, observarPeriodo } from "../services/periodoService.js";
+
+const iniciarLeitura = criarControleLeitura();
 
 let idTransacaoEmEdicao = null;
 let filtrosAtivos = {};
@@ -67,11 +69,14 @@ function atualizarCategoriasDoFormulario(
     }
 }
 
-function atualizarListaTransacoes() {
-    const resultado = filtrarTransacoes({
+export async function atualizarListaTransacoes() {
+    const aindaAtual = iniciarLeitura();
+    const resultado = await filtrarTransacoes({
         ...filtrosAtivos,
         mesReferencia: obterMesSelecionado()
     });
+
+    if (!aindaAtual()) return false;
 
     if (!resultado.sucesso) {
         paginaAtual = 1;
@@ -83,7 +88,7 @@ function atualizarListaTransacoes() {
         renderizarTransacoes([], tratarEdicaoTransacao, tratarExclusaoTransacao);
 
         renderizarPaginacao({paginaAtual: 1, totalPaginas: 1});
-        return;
+        return false;
     }
 
     const possuiFiltrosAtivos = Object.values(
@@ -106,6 +111,7 @@ function atualizarListaTransacoes() {
     );
 
     renderizarPaginacao(paginacao);
+    return true;
 }
 
 function tratarEdicaoTransacao(transacao) {
@@ -159,36 +165,34 @@ function tratarExclusaoTransacao(id) {
         return;
     }
 
-    limparMensagem(SELETOR_MENSAGEM);
+    return executarAcaoFinanceira(SELETOR_MENSAGEM, async () => {
+        exibirMensagem(SELETOR_MENSAGEM, "Salvando alterações...", "sucesso");
 
-    const resultado = excluirTransacao(id);
+        const resultado = await excluirTransacao(id);
 
-    if (!resultado.sucesso) {
-        exibirMensagem(
-            SELETOR_MENSAGEM,
-            resultado.erros
-        );
+        if (!resultado.sucesso) {
+            exibirMensagem(
+                SELETOR_MENSAGEM,
+                resultado.erros
+            );
 
-        return;
-    }
+            return;
+        }
 
-    if (idTransacaoEmEdicao === id) {
-        restaurarModoCadastro();
-    }
+        if (idTransacaoEmEdicao === id) {
+            restaurarModoCadastro();
+        }
 
-    atualizarListaTransacoes();
-    atualizarResumoFinanceiro();
-    atualizarListaOrcamentosCategoria();
-    atualizarListaOrcamentosMensais();
+        const atualizou = (await Promise.all([
+            atualizarListaTransacoes(), atualizarResumoFinanceiro(),
+            atualizarListaOrcamentosCategoria(), atualizarListaOrcamentosMensais()
+        ])).every(Boolean);
 
-    exibirMensagem(
-        SELETOR_MENSAGEM,
-        "Transação excluída com sucesso.",
-        "sucesso"
-    );
+        exibirResultadoGravacao(SELETOR_MENSAGEM, "Transação excluída com sucesso.", atualizou);
+    });
 }
 
-export function inicializarTransacaoController() {
+export function inicializarTransacaoController(categorias = []) {
     const formulario = document.querySelector('#form-nova-transacao');
 
     const inputTipo = document.querySelector('#tipo');
@@ -208,27 +212,7 @@ export function inicializarTransacaoController() {
     const botaoPaginaAnterior = document.querySelector("#pagina-anterior");
     const botaoProximaPagina = document.querySelector("#proxima-pagina");
 
-    const resultadoCategorias = listarCategorias();
-
-    if (!resultadoCategorias.sucesso) {
-        exibirMensagem(
-            SELETOR_MENSAGEM,
-            resultadoCategorias.erros
-        );
-
-        return;
-    }
-
-    categoriasDisponiveis = resultadoCategorias.categorias;
-
-    atualizarCategoriasDoFormulario("");
-
-    renderizarCategoriasFiltro(
-        categoriasDisponiveis
-    );
-
-    atualizarListaTransacoes();
-    atualizarResumoFinanceiro();
+    recarregarCategoriasTransacao(categorias);
 
     observarPeriodo(() => {
         paginaAtual = 1;
@@ -286,49 +270,56 @@ export function inicializarTransacaoController() {
     formulario.addEventListener('submit', function(evento) {
         evento.preventDefault();
 
-        limparMensagem(SELETOR_MENSAGEM);
+        return executarAcaoFinanceira(SELETOR_MENSAGEM, async () => {
+            exibirMensagem(SELETOR_MENSAGEM, "Salvando alterações...", "sucesso");
 
-        const estaEditando = idTransacaoEmEdicao !== null;
+            const estaEditando = idTransacaoEmEdicao !== null;
 
-        const transacao = {
-            tipo: inputTipo.value,
-            recorrencia: inputRecorrencia.value,
-            essencialidade: inputEssencialidade.value,
-            descricao: inputDescricao.value.trim(),
-            valor: Number(inputValor.value),
-            categoria: inputCategoria.value,
-            data: inputData.value,
-            observacao: inputObservacao.value.trim()
-        };
+            const transacao = {
+                tipo: inputTipo.value,
+                recorrencia: inputRecorrencia.value,
+                essencialidade: inputEssencialidade.value,
+                descricao: inputDescricao.value.trim(),
+                valor: Number(inputValor.value),
+                categoria: inputCategoria.value,
+                data: inputData.value,
+                observacao: inputObservacao.value.trim()
+            };
 
-        const resultado = estaEditando
-            ? editarTransacao(idTransacaoEmEdicao, transacao)
-            : cadastrarTransacao(transacao);
+            const resultado = estaEditando
+                ? await editarTransacao(idTransacaoEmEdicao, transacao)
+                : await cadastrarTransacao(transacao);
 
-        if (!resultado.sucesso) {
-            exibirMensagem(
-                SELETOR_MENSAGEM,
-                resultado.erros
-            )
+            if (!resultado.sucesso) {
+                exibirMensagem(
+                    SELETOR_MENSAGEM,
+                    resultado.erros
+                )
 
-            return;
-        }
+                return;
+            }
 
-        restaurarModoCadastro();
-        paginaAtual = 1;
-        atualizarListaTransacoes();
-        atualizarResumoFinanceiro();
-        atualizarListaOrcamentosCategoria();
-        atualizarListaOrcamentosMensais();
+            restaurarModoCadastro();
+            paginaAtual = 1;
+            const atualizou = (await Promise.all([
+                atualizarListaTransacoes(), atualizarResumoFinanceiro(),
+                atualizarListaOrcamentosCategoria(), atualizarListaOrcamentosMensais()
+            ])).every(Boolean);
 
-        const mensagemSucesso = estaEditando
-            ? "Transação atualizada com sucesso."
-            : "Transação cadastrada com sucesso."
+            const mensagemSucesso = estaEditando
+                ? "Transação atualizada com sucesso."
+                : "Transação cadastrada com sucesso."
 
-        exibirMensagem(
-            SELETOR_MENSAGEM,
-            mensagemSucesso,
-            "sucesso"
-        );
+            exibirResultadoGravacao(SELETOR_MENSAGEM, mensagemSucesso, atualizou);
+        });
     });
+}
+
+export function recarregarCategoriasTransacao(categorias) {
+    categoriasDisponiveis = categorias;
+    paginaAtual = 1;
+    atualizarCategoriasDoFormulario(document.querySelector("#tipo").value, document.querySelector("#categoria").value);
+    const categoriaFiltro = document.querySelector("#filtro-categoria").value;
+    renderizarCategoriasFiltro(categoriasDisponiveis);
+    document.querySelector("#filtro-categoria").value = categoriaFiltro;
 }
