@@ -1,3 +1,5 @@
+let temporizadorToast;
+
 function buscarElementoMensagem(seletor) {
     const elemento = document.querySelector(seletor);
 
@@ -31,10 +33,25 @@ export function exibirMensagem(
         : "mensagem-erro";
 
     elemento.classList.add(classe);
+
+    if (elemento.classList.contains("toast-message")) {
+        clearTimeout(temporizadorToast);
+        elemento.classList.add("toast-visible");
+        temporizadorToast = setTimeout(() => {
+            elemento.classList.remove("toast-visible");
+            elemento.textContent = "";
+            elemento.classList.remove("mensagem-erro", "mensagem-sucesso");
+        }, 4500);
+    }
 }
 
 export function limparMensagem(seletor) {
     const elemento = buscarElementoMensagem(seletor);
+
+    if (elemento.classList.contains("toast-message")) {
+        clearTimeout(temporizadorToast);
+        elemento.classList.remove("toast-visible");
+    }
 
     elemento.textContent = "";
 

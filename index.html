@@ -17,7 +17,7 @@
             <div class="sidebar-group">
                 <p class="sidebar-caption">Seu espaço</p>
                 <nav class="sidebar-nav" aria-label="Seções da página">
-                    <a href="#resumo-financeiro"><span>01</span> Visão geral</a>
+                    <a href="#resumo-financeiro" aria-current="location"><span>01</span> Visão geral</a>
                     <a href="#nova-transacao"><span>02</span> Nova transação</a>
                     <a href="#orcamentos-mensais"><span>03</span> Orçamento mensal</a>
                     <a href="#orcamentos-categoria"><span>04</span> Por categoria</a>
@@ -31,8 +31,20 @@
         <div class="workspace">
             <header class="workspace-header">
                 <span class="header-path">SCF <span aria-hidden="true">/</span> Painel</span>
-                <a class="header-link" href="#nova-transacao">+ Adicionar transação</a>
+                <div class="header-actions">
+                    <button type="button" id="conectar-google" class="header-link">Conectar ao Google Sheets</button>
+                    <a class="header-link" href="#nova-transacao">+ Adicionar transação</a>
+                    <a id="abrir-planilha-google" class="header-link" target="_blank" rel="noopener noreferrer" hidden>Abrir planilha</a>
+                    <button type="button" id="alternar-tema" class="header-link theme-toggle" aria-label="Alternar tema" title="Alternar tema" aria-pressed="false">
+                        <svg class="theme-toggle-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                            <circle class="theme-toggle-center" cx="12" cy="12" r="4"></circle>
+                            <path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"></path>
+                        </svg>
+                    </button>
+                </div>
             </header>
+
+            <p id="mensagem-google" class="toast-message" role="status" aria-live="polite"></p>
 
             <main id="conteudo-principal">
                 <div class="page-intro">
@@ -41,39 +53,6 @@
                     <p>Acompanhe seus movimentos, organize limites e veja o que importa em um só lugar.</p>
                 </div>
 
-
-        <section id="conexao-google" aria-labelledby="titulo-conexao-google">
-            <div class="section-heading">
-                <div>
-                    <p class="section-kicker">Armazenamento</p>
-                    <h2 id="titulo-conexao-google">Google Sheets</h2>
-                </div>
-
-                <p>Conecte sua conta para carregar e salvar seus dados na planilha.</p>
-            </div>
-
-            <div class="acoes-formulario">
-                <button type="button" id="conectar-google">
-                    Conectar ao Google Sheets
-                </button>
-            </div>
-
-            <p
-                id="mensagem-google"
-                class="mensagem-formulario"
-                aria-live="polite"
-            >Conecte-se para carregar seus dados. Os novos registros serão salvos na planilha.</p>
-
-            <a
-                id="abrir-planilha-google"
-                class="header-link"
-                target="_blank"
-                rel="noopener noreferrer"
-                hidden
-            >
-                Abrir planilha
-            </a>
-        </section>
 
         <section class="periodo-visualizacao" aria-label="Período de visualização">
             <div>
